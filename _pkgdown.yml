@@ -1,0 +1,40 @@
+template:
+  package: centerPackageTemplate
+  default_assets: false
+
+
+home:
+  strip_header: true
+  links:
+    - text: Other Center stuff
+      href: https://centerforassessment.github.io/
+
+
+navbar:
+    title: ~
+    type: default
+    left:
+    - text: Getting Started
+      href: articles/cfaTools.html
+    - text: Reference
+      href: reference/index.html
+    - text: News
+      menu:
+      - text: "Release notes"
+      - text: "cfaTools 0.0-0.1"
+        href: articles/releases/cfaTools-0.0-0.1.html
+      - text: "------------------"
+      - text: "Change log"
+        href: news/index.html
+    right:
+      - icon: fa-github
+        href: https://github.com/centerforassessment/cfaTools
+      - icon: fa-twitter
+        href: https://twitter.com/intent/tweet?url=https%3A%2F%2Fcenterforassessment.github.io%2FcfaTools&via=dbetebenner&text=cfaTools%3A%20R%20package%20to%20convert%20cardinal%20to%20ordinal%20numbers&hashtags=cfaTools%2C%20rstats
+
+
+reference:
+      - title: Center for Assessment Tools for Investigating (Achievement) Gaps
+        desc:  Function for investigating (achievement) gaps.
+        contents:
+            - cfaGaps

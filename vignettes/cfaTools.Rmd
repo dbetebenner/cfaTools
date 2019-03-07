@@ -1,0 +1,50 @@
+---
+title: "Getting started with cfaTools"
+author: "Damian W Betebenner"
+date: "`r toOrdinal::toOrdinalDate()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with cfaTools}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+
+```{r include = FALSE}
+library(cfaTools)
+is_html_output = function() {
+  knitr::opts_knit$get("rmarkdown.pandoc.to")=="html"
+}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "",
+    prompt=TRUE,
+    fig.dpi = 96
+			)
+if (is_html_output()) {
+    options(width=1000)
+}
+```
+
+# Introduction
+
+The R package **cfaTools** contains data analysis tools for use in examining large scale student educational assessment data. The package is under active development by staff at the [Center for Assessment](https://www.nciea.org).
+
+# Use
+
+After [installing](../index.html#installation) the package from either CRAN
+or GitHub, there are many possible analyses of educational assessments that can be conducted using functions in the package.
+
+
+## Examples
+
+The first argument, `n`, is the cardinal number to be converted to an ordinal number:
+
+```{r}
+cfaGaps(gap_data=sgpData_LONG[YEAR=="2018_2019", c("SCALE_SCORE", "ETHNICITY"), with=FALSE],
+        gap_groups=c("African American", "White"))
+```
+
+
+# Contributions & Requests
+
+If you have contribution (for example, another language) or a feature request for the **cfaTools** package, don't hesitate to write or set up an [issue on GitHub](https://github.com/CenterForAssessment/cfaTools/issues).

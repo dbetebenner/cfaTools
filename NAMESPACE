@@ -1,0 +1,5 @@
+import(testthat)
+export(cfaGaps)
+import(data.table)
+importFrom(crayon,bold,green,magenta,red,yellow)
+importFrom(utils,packageVersion)

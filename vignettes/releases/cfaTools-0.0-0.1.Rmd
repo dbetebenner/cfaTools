@@ -1,0 +1,27 @@
+---
+title: "cfaTools 0.0-0.1"
+date: "March 9th, 2019"
+---
+
+```{r, echo = FALSE}
+is_html_output = function() {
+  knitr::opts_knit$get("rmarkdown.pandoc.to")=="html"
+}
+knitr::opts_chunk$set(collapse = TRUE, comment = "", prompt=TRUE, fig.dpi = 96)
+if (is_html_output()) {
+    options(width=1000)
+}
+```
+
+
+This is the initial release of the **cfaTools** package. The **cfaTools** package is developed by the [Center for Assessment](https://www.nciea.org) to provide helpful, open source,
+and free software tools to states (and others) interested in examining/analyzing large scale educational assessment data. 
+
+```{r}
+require(cfaTools)
+require(SGPdata)
+cfaGaps(gap_data=sgpData_LONG[YEAR=="2018_2019", c("SCALE_SCORE", "ETHNICITY"), with=FALSE],
+	gap_groups=c("African American", "White"))  
+```
+
+For complete `cfaTools` documentation, see the [documentation](https://CenterForAssessment.github.io/toOrdinal/reference/toOrdinal.html)

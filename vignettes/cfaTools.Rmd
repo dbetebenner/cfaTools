@@ -41,7 +41,8 @@ The first argument, `n`, is the cardinal number to be converted to an ordinal nu
 
 ```{r}
 cfaGaps(gap_data=sgpData_LONG[YEAR=="2018_2019", c("SCALE_SCORE", "ETHNICITY"), with=FALSE],
-        gap_groups=c("African American", "White"))
+        gap_groups=c("African American", "White"),
+	output_format="PLOTLY")
 ```
 
 

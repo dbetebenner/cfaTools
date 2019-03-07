@@ -24,4 +24,4 @@ cfaGaps(gap_data=sgpData_LONG[YEAR=="2018_2019", c("SCALE_SCORE", "ETHNICITY"), 
 	gap_groups=c("African American", "White"))  
 ```
 
-For complete `cfaTools` documentation, see the [documentation](https://CenterForAssessment.github.io/toOrdinal/reference/toOrdinal.html)
+For complete `cfaTools` documentation, see the [documentation](https://CenterForAssessment.github.io/cfaTools/reference/cfaTools.html)

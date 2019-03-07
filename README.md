@@ -10,9 +10,7 @@ cfaTools
 
 # Overview
 
-The R package **cfaTools** contains data analysis tools for use in examining large scale student educational assessment data. The package is under active development by 
-staff at the [Center for Assessment](https://www.nciea.org).
-
+The R package **cfaTools** contains data analysis tools for use in examining large scale student educational assessment data. The package is under active development by staff at the [Center for Assessment](https://www.nciea.org).
 
 # Installation
 

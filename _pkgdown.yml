@@ -15,7 +15,7 @@ navbar:
     type: default
     left:
     - text: Getting Started
-      href: articles/toOrdinal.html
+      href: articles/cfaTools.html
     - text: Reference
       href: reference/index.html
     - text: News
@@ -30,15 +30,11 @@ navbar:
       - icon: fa-github
         href: https://github.com/centerforassessment/cfaTools
       - icon: fa-twitter
-        href: https://twitter.com/intent/tweet?url=https%3A%2F%2Fcenterforassessment.github.io%2FtoOrdinal&via=dbetebenner&text=toOrdinal%3A%20R%20package%20to%20convert%20cardinal%20to%20ordinal%20numbers&hashtags=toOrdinal%2C%20rstats
+        href: https://twitter.com/intent/tweet?url=https%3A%2F%2Fcenterforassessment.github.io%2FcfaTools&via=dbetebenner&text=cfaTools%3A%20R%20package%20to%20convert%20cardinal%20to%20ordinal%20numbers&hashtags=cfaTools%2C%20rstats
 
 
 reference:
-      - title: Center for Assessment Tools for Large Scale Educational Assessment Analysis
-        desc:  Function to converting cardinal to ordinal numbers.
+      - title: Center for Assessment Tools for Investigating (Achievement) Gaps
+        desc:  Function for investigating (achievement) gaps.
         contents:
-            - toOrdinal
-      - title: Convert calendar date to long, ordinal version
-        desc:  Function to convert calendar date to long ordinal version.
-        contents:
-            - toOrdinalDate
+            - cfaGaps

@@ -1,5 +1,6 @@
 \name{cfaTools-package}
 \alias{cfaTools-package}
+\alias{cfaTools}
 \docType{package}
 \title{Tools for Large Scale Educational Assessment Analysis
 }

@@ -6,13 +6,16 @@
 \usage{
 cfaGaps(
 	gap_data,
-	gap_groups=NULL)
+	gap_groups=NULL,
+	output_format="PDF")
 }
 
 \arguments{
   \item{gap_data}{Assessment data (usually scaled scores) from which to calculate and depict (achievement) gaps.
   }
   \item{gap_groups}{Vector of group names with which to calculate/create gap diagnostic information/plots.
+  }
+  \item{output_format}{Character string indicating the output format for the figures produced by cfaGaps. Currently supports PDF, PNG, SVG, and PLOTLY.
   }
 }
 

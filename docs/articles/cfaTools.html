@@ -6,6 +6,17 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="https://centerforassessment.github.io/assets/favicon.png" sizes="16x16">
+<meta property="og:title" content="cfaTools • Getting started with cfaTools">
+<meta property="og:description" content="cfaTools • Getting started with cfaTools">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://centerforassessment.github.io/cfaTools">
+<meta property="og:image" content="https://centerforassessment.github.io/assets/favicon.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@NCIEA1">
+<meta name="twitter:creator" content="@dbetebenner">
+<meta name="twitter:image" content="https://centerforassessment.github.io/assets/favicon.png">
+<meta name="twitter:title" content="cfaTools • Getting started with cfaTools">
+<meta name="twitter:description" content="cfaTools • Getting started with cfaTools">
 <title>cfaTools • Getting started with cfaTools</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- Fonts --><link href="https://fonts.googleapis.com/css?family=Josefin+Sans:400" rel="stylesheet" type="text/css">
@@ -80,7 +91,7 @@
       <h1>Getting started with cfaTools</h1>
                         <h4 class="author">Damian W Betebenner</h4>
             
-            <h4 class="date">March 6th, 2019</h4>
+            <h4 class="date">March 7th, 2019</h4>
           </div>
 
     
@@ -100,8 +111,9 @@
 <a href="#examples" class="anchor"></a>Examples</h2>
 <p>The first argument, <code>n</code>, is the cardinal number to be converted to an ordinal number:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="op">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/cfaGaps.html">cfaGaps</a></span>(<span class="dt">gap_data=</span>sgpData_LONG[YEAR<span class="op">==</span><span class="st">"2018_2019"</span>, <span class="kw">c</span>(<span class="st">"SCALE_SCORE"</span>, <span class="st">"ETHNICITY"</span>), <span class="dt">with=</span><span class="ot">FALSE</span>],</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="op">+</span><span class="st">         </span><span class="dt">gap_groups=</span><span class="kw">c</span>(<span class="st">"African American"</span>, <span class="st">"White"</span>))</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">[<span class="dv">1</span>] <span class="st">"On the way!"</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="op">+</span><span class="st">         </span><span class="dt">gap_groups=</span><span class="kw">c</span>(<span class="st">"African American"</span>, <span class="st">"White"</span>),</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="op">+</span><span class="st">   </span><span class="dt">output_format=</span><span class="st">"PLOTLY"</span>)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">[<span class="dv">1</span>] <span class="st">"Coming Soon!"</span></a></code></pre></div>
 </div>
 </div>
 <div id="contributions-requests" class="section level1">

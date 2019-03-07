@@ -7,6 +7,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="https://centerforassessment.github.io/assets/favicon.png" sizes="16x16">
 
+<meta property="og:title" content="cfaTools • Diagnostic achievement gap information — cfaGaps"/>
+<meta property="og:description" content="cfaTools • Diagnostic achievement gap information — cfaGaps"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://centerforassessment.github.io/cfaTools"/>
+<meta property="og:image" content="https://centerforassessment.github.io/assets/favicon.png"/>
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:site" content="@NCIEA1"/>
+<meta name="twitter:creator" content="@dbetebenner"/>
+<meta name="twitter:image" content="https://centerforassessment.github.io/assets/favicon.png"/>
+<meta name="twitter:title" content="cfaTools • Diagnostic achievement gap information — cfaGaps"/>
+<meta name="twitter:description" content="cfaTools • Diagnostic achievement gap information — cfaGaps"/>
+
 <title>cfaTools • Diagnostic achievement gap information — cfaGaps</title>
 
 <!-- jquery -->
@@ -113,7 +126,8 @@
 
     <pre class="usage"><span class='fu'>cfaGaps</span>(
         <span class='no'>gap_data</span>,
-        <span class='kw'>gap_groups</span><span class='kw'>=</span><span class='kw'>NULL</span>)</pre>
+        <span class='kw'>gap_groups</span><span class='kw'>=</span><span class='kw'>NULL</span>,
+        <span class='kw'>output_format</span><span class='kw'>=</span><span class='st'>"PDF"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -125,6 +139,10 @@
     <tr>
       <th>gap_groups</th>
       <td><p>Vector of group names with which to calculate/create gap diagnostic information/plots.</p></td>
+    </tr>
+    <tr>
+      <th>output_format</th>
+      <td><p>Character string indicating the output format for the figures produced by cfaGaps. Currently supports PDF, PNG, SVG, and PLOTLY.</p></td>
     </tr>
     </table>
     

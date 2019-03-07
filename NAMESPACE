@@ -1,5 +1,6 @@
 import(testthat)
 export(cfaGaps)
 import(data.table)
+import(grid)
 importFrom(crayon,bold,green,magenta,red,yellow)
 importFrom(utils,packageVersion)

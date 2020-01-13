@@ -15,13 +15,13 @@ if (is_html_output()) {
 
 
 This is the initial release of the **cfaTools** package. The **cfaTools** package is developed by the [Center for Assessment](https://www.nciea.org) to provide helpful, open source,
-and free software tools to states (and others) interested in examining/analyzing large scale educational assessment data. 
+and free software tools to states (and others) interested in examining/analyzing large scale educational assessment data.
 
-```{r}
+```{r eval=FALSE}
 require(cfaTools)
 require(SGPdata)
 cfaGaps(gap_data=sgpData_LONG[YEAR=="2018_2019", c("SCALE_SCORE", "ETHNICITY"), with=FALSE],
-	gap_groups=c("African American", "White"))  
+	gap_groups=c("African American", "White"))
 ```
 
 For complete `cfaTools` documentation, see the [documentation](https://CenterForAssessment.github.io/cfaTools/reference/cfaTools.html)

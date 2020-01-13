@@ -16,7 +16,7 @@ The R package **cfaTools** contains data analysis tools for use in examining lar
 
 ## From [CRAN](https://CRAN.R-project.org/package=cfaTools)
 
-To install the latest stable release of **cfaTools** from [CRAN](https://CRAN.R-project.org/package=cfaTools)
+To install the latest stable release of **cfaTools** from [CRAN](https://CRAN.R-project.org/package=cfaTools) (Currently not yet posted to CRAN)
 
 ```R
 > install.packages("cfaTools")

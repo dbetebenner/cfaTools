@@ -39,7 +39,7 @@ or GitHub, there are many possible analyses of educational assessments that can 
 
 The first argument, `n`, is the cardinal number to be converted to an ordinal number:
 
-```{r}
+```{r eval=FALSE}
 cfaGaps(gap_data=sgpData_LONG[YEAR=="2018_2019", c("SCALE_SCORE", "ETHNICITY"), with=FALSE],
         gap_groups=c("African American", "White"),
 	output_format="PLOTLY")

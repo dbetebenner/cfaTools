@@ -7,7 +7,12 @@
 cfaGaps(
 	gap_data,
 	gap_groups=NULL,
-	output_format="PDF")
+	gap_plot_title="Non-Parametric Gap Plot",
+	gap_plot_fig_width=13,
+	gap_plot_fig_height=8.5,
+	gap_plot_file_path="Visualizations/Gaps/",
+	gap_plot_file_name="Gaps",
+	gap_plot_output_format="PDF")
 }
 
 \arguments{
@@ -15,7 +20,17 @@ cfaGaps(
   }
   \item{gap_groups}{Vector of group names with which to calculate/create gap diagnostic information/plots.
   }
-  \item{output_format}{Character string indicating the output format for the figures produced by cfaGaps. Currently supports PDF, PNG, SVG, and PLOTLY.
+  \item{gap_plot_title}{Character string indicating the title of the gap plot. Default is 'Non-paerametric gap plot'.
+  }
+  \item{gap_plot_fig_width}{Width (in inches) of gap plot. Default is 13 inches.
+  }
+  \item{gap_plot_fig_height}{Height (in inches) of gap plot. Default is 8.5 inches.
+  }
+  \item{gap_plot_file_path}{Path to be used where gap plot is saved. Default is 'Visualizations/Gaps/'.
+  }
+  \item{gap_plot_file_name}{File name to be used for gap plot. Default is 'Gaps'.
+  }
+  \item{gap_plot_output_format}{Character string indicating the output format for the figures produced by cfaGaps. Currently supports PDF, PNG, SVG, and PLOTLY.
   }
 }
 
@@ -31,7 +46,7 @@ cfaGaps(
 \examples{
 	\dontrun{
 		cfaGaps(gap_data=sgpData_LONG[YEAR=="2018_2019", c("SCALE_SCORE", "ETHNICITY"), with=FALSE],
-						gap_groups=c("African American", "White"))  
+						gap_groups=c("African American", "White"))
 	}
 }
 

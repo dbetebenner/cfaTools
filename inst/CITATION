@@ -3,11 +3,11 @@ citHeader("To cite package 'cfaTools' in publications, please use:")
 citEntry(entry = "Manual",
          title        = "{cfaTools}: Center for Assessment Tools for Large Scale Educational Assessment Analysis",
          author       = personList(as.person("Damian W. Betebenner"), as.person("Adam R. Van Iwaarden"), as.person("Nathan Dadey"),  as.person("Joseph Martineau")),
-         year         = "2019",
+         year         = "2020",
          note         = "R package version 0.0-0.3",
          url          = "https://centerforassessment.github.io/cfaTools",
 
-         textVersion  = paste("Damian W. Betebenner, Adam R. Van Iwaarden, Nathan Dadey and Joseph Martineau (2019).",
+         textVersion  = paste("Damian W. Betebenner, Adam R. Van Iwaarden, Nathan Dadey and Joseph Martineau (2020).",
                         "cfaTools: Center for Assessment Tools for Large Scale Educational Assessment Analysis",
                         "(R package version 0.0-0.3",
                         "URL https://centerforassessment.github.io/cfaTools")

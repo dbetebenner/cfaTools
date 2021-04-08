@@ -2,14 +2,18 @@
 
 * Good beta-version of package with function cfaGaps released
 
-# cfaTools 0.0-0.1
+# cfaTools 0.0-0.4
 
-* Package Released with initial function supporting analysis of gaps (including achievement gaps).
+* Adding initial version of bootstrapSRS function to package.
+
+# cfaTools 0.0-0.3
+
+* Small fixes to packagePages to build package website.
 
 # cfaTools 0.0-0.2
 
 * Minor updates to cfaGaps function.
 
-# cfaTools 0.0-0.3
+# cfaTools 0.0-0.1
 
-* Small fixes to packagePages to build package website.
+* Package Released with initial function supporting analysis of gaps (including achievement gaps).

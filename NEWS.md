@@ -1,6 +1,6 @@
-# cfaTools 0.0-1.0
+# cfaTools 0.0-0.5
 
-* Good beta-version of package with function cfaGaps released
+* Fixing documentation and other minor updates for bootstrapSRS testing
 
 # cfaTools 0.0-0.4
 

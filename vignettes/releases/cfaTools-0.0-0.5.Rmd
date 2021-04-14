@@ -1,0 +1,19 @@
+---
+title: "cfaTools 0.0-0.5"
+date: "April 13th, 2021"
+---
+
+```{r, echo = FALSE}
+is_html_output = function() {
+  knitr::opts_knit$get("rmarkdown.pandoc.to")=="html"
+}
+knitr::opts_chunk$set(collapse = TRUE, comment = "", prompt=TRUE, fig.dpi = 96)
+if (is_html_output()) {
+    options(width=1000)
+}
+```
+
+This update to **cfaTools** package includes the function `bootstrapSRS` that allows for the calculation of bootstrap sample statistics based upon stratified random sampling of data using 
+pre-specified strata proportions.  
+
+For complete `cfaTools` documentation, see the [documentation](https://CenterForAssessment.github.io/cfaTools/reference/cfaTools.html)

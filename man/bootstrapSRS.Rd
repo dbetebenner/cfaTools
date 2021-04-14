@@ -5,7 +5,6 @@
 }
 \usage{
 bootstrapSRS(
-	data_table,
         summary_variable,
         strata_variable,
         population_strata_proportions,
@@ -16,8 +15,6 @@ bootstrapSRS(
 }
 
 \arguments{
-  \item{data_table}{
-  }
   \item{summary_variable}{
   }
   \item{strata_variable}{

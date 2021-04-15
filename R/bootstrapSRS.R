@@ -4,10 +4,10 @@ function(summary_variable,
         population_strata_proportions,
         sample_size=NULL,
         bootstrap_iterations=100,
-        summary_statistic="mean",
+        summary_statistic="mean", ## or median
         return_bootstrap_distribution=FALSE) {
 
-	sample_data <- data.table(SUMMARY_VARIABLE=summary_variable, STRATA_VARIABLE=strata_variable)
+	sample_data <- data.table(SUMMARY_VARIABLE=summary_variable, STRATA_VARIABLE=as.character(strata_variable))
 	if (is.null(sample_size)) sample_size=nrow(sample_data)
 	stopifnot(length(population_strata_proportions) == uniqueN(sample_data[['STRATA_VARIABLE']]))
 	tmp.replications <- ceiling(max((population_strata_proportions*sample_size)/table(sample_data[['STRATA_VARIABLE']])))

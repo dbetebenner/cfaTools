@@ -16,8 +16,8 @@ function(summary_variable,
 	if (return_bootstrap_distribution){
 		return(tmp.sample_statistic)
 	} else {
-		tmp.list <- list(eval(parse(text=paste(summary_statistic, "(tmp.sample_statistic, na.rm=TRUE)"))), sd(tmp.sample_statistic, na.rm=TRUE))
- 		names(tmp.list) <- c(toupper(summary_statistic), "SD")
-		return(tmp.list)
+		tmp.vector <- c(eval(parse(text=paste(summary_statistic, "(tmp.sample_statistic, na.rm=TRUE)"))), sd(tmp.sample_statistic, na.rm=TRUE))
+ 		names(tmp.vector) <- c(toupper(summary_statistic), "SD")
+		return(tmp.vector)
     }
 } ### END bootstrapSRS

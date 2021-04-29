@@ -7,7 +7,7 @@ function(sgp_object,
         sample_size=NULL,
         bootstrap_iterations=100,
         summary_statistic="mean",
-        aggregation_group=c("CONTENT_AREA", "YEAR")) {
+        aggregation_group=c("CONTENT_AREA", "GRADE")) {
 
         CONTENT_AREA <- GRADE <- GROUP_TOTAL <- PROPORTION <- SCALE_SCORE <- SCALE_SCORE_DECILE <- SCALE_SCORE_PRIOR <- SCALE_SCORE_PRIOR_DECILE <- NULL
         SGP <- STRATA_VARIABLE <- TOTAL <- VALID_CASE <- YEAR <- MEAN_SCALE_SCORE_INFERRED_SE <- MEAN_SGP_INFERRED_SE <- NULL
@@ -39,6 +39,7 @@ function(sgp_object,
 
         ### Create STRATA_VARIABLE
 
+        sgp_object_data <- na.omit(sgp_object_data, cols=strata_variables)
         eval(parse(text=paste("sgp_object_data[,STRATA_VARIABLE:=paste(", paste(strata_variables, collapse=", "), ")]")))
 
 

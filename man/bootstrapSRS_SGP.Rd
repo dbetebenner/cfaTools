@@ -13,7 +13,7 @@ bootstrapSRS_SGP(
         sample_size=NULL,
         bootstrap_iterations=100,
         summary_statistic="mean",
-        aggregation_group=c("CONTENT_AREA", "GRADE")
+        aggregation_group=c("CONTENT_AREA", "GRADE"))
 }
 
 \arguments{

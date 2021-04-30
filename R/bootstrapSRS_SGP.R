@@ -24,8 +24,8 @@ function(sgp_object,
 
         ### copy data from object
 
-        sgp_object_data <- copy(sgp_object@Data)
-
+        if ("SGP" %in% class(sgp_object)) sgp_object_data <- copy(sgp_object@Data)
+        if (!("data.table" %in% class(sgp_object_data))) stop("Please supply a either a data.table or SGP object for bootstrapSRS imputation.")
 
         ### Create prior/current achievement deciles if requested:
 

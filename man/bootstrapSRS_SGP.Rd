@@ -6,10 +6,12 @@
 \usage{
 bootstrapSRS_SGP(
 	sgp_object,
-        strata_variables,
-        strata_proportions_years,
+	strata_summaries=c("STATUS", "GROWTH"),
+        strata_variables="SCALE_SCORE_DECILE",
+        strata_proportions_years_status,
+        strata_proportions_years_growth,
         summary_years,
-        create_scale_score_deciles=c("PRIOR", "CURRENT"),
+        create_scale_score_deciles=TRUE,
         sample_size=NULL,
         bootstrap_iterations=100,
         summary_statistic="mean",
@@ -19,9 +21,13 @@ bootstrapSRS_SGP(
 \arguments{
   \item{sgp_object}{
   }
+  \item{strata_summaries}{Character string indicating \code{STATUS} and/or \code{GROWTH}.
+  }
   \item{strata_variables}{
   }
-  \item{strata_proportions_years}{
+  \item{strata_proportions_years_status}{
+  }
+  \item{strata_proportions_years_growth}{
   }
   \item{summary_years}{
   }

@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="https://centerforassessment.github.io/assets/favicon.png" sizes="16x16">
 
-<meta property="og:title" content="cfaTools • Articles"/>
-<meta property="og:description" content="cfaTools • Articles"/>
+<meta property="og:title" content="cfaTools • Higher level function for using bootstrap_SRS with SGP objects — bootstrapSRS_SGP"/>
+<meta property="og:description" content="cfaTools • Higher level function for using bootstrap_SRS with SGP objects — bootstrapSRS_SGP"/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://centerforassessment.github.io/cfaTools"/>
 <meta property="og:image" content="https://centerforassessment.github.io/assets/favicon.png"/>
@@ -17,10 +17,10 @@
 <meta name="twitter:site" content="@NCIEA1"/>
 <meta name="twitter:creator" content="@dbetebenner"/>
 <meta name="twitter:image" content="https://centerforassessment.github.io/assets/favicon.png"/>
-<meta name="twitter:title" content="cfaTools • Articles"/>
-<meta name="twitter:description" content="cfaTools • Articles"/>
+<meta name="twitter:title" content="cfaTools • Higher level function for using bootstrap_SRS with SGP objects — bootstrapSRS_SGP"/>
+<meta name="twitter:description" content="cfaTools • Higher level function for using bootstrap_SRS with SGP objects — bootstrapSRS_SGP"/>
 
-<title>cfaTools • Articles</title>
+<title>cfaTools • Higher level function for using bootstrap_SRS with SGP objects — bootstrapSRS_SGP</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -54,7 +54,7 @@
   </head>
 
   <body>
-    <div class="container template-vignette-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -129,23 +129,99 @@
       
       </header>
 
-      <div class="page-header">
-  <h1>Articles <small>version&nbsp;0.0-0.95</small></h1>
-</div>
-
-<div class="row">
-  <div class="col-md-9">
-    <div class="section ">
-      <h3>All vignettes</h3>
-      <p class="section-desc"></p>
-
-      <ul>
-        <li><a href="cfaTools.html">Getting started with cfaTools</a></li>
-        <li><a href="fair_trend.html">Exploring Ho's (2021) Fair Trend Metric</a></li>
-        <li><a href="releases/cfaTools-0.0-0.1.html">cfaTools 0.0-0.1</a></li>
-        <li><a href="releases/cfaTools-0.0-0.5.html">cfaTools 0.0-0.5</a></li>
-      </ul>
+      <div class="row">
+  <div class="col-md-9 contents">
+    <div class="page-header">
+    <h1>Higher level function for using bootstrap_SRS with SGP objects</h1>
     </div>
+
+    <p>Function for calculating bootstrap summary statistics using data and pre-designated strata proportions with SGP objects.</p>
+
+    <pre class="usage"><span class='fu'>bootstrapSRS_SGP</span>(
+        <span class='no'>sgp_object</span>,
+        <span class='kw'>strata_summaries</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"STATUS"</span>, <span class='st'>"GROWTH"</span>),
+        <span class='kw'>strata_variables</span><span class='kw'>=</span><span class='st'>"SCALE_SCORE_DECILE"</span>,
+        <span class='no'>strata_proportions_years_status</span>,
+        <span class='no'>strata_proportions_years_growth</span>,
+        <span class='no'>summary_years</span>,
+        <span class='kw'>create_scale_score_deciles</span><span class='kw'>=</span><span class='fl'>TRUE</span>,
+        <span class='kw'>sample_size</span><span class='kw'>=</span><span class='kw'>NULL</span>,
+        <span class='kw'>bootstrap_iterations</span><span class='kw'>=</span><span class='fl'>100</span>,
+        <span class='kw'>summary_statistic</span><span class='kw'>=</span><span class='st'>"mean"</span>,
+        <span class='kw'>aggregation_group</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"CONTENT_AREA"</span>, <span class='st'>"GRADE"</span>))</pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>sgp_object</th>
+      <td><p></p></td>
+    </tr>
+    <tr>
+      <th>strata_summaries</th>
+      <td><p>Character string indicating <code>STATUS</code> and/or <code>GROWTH</code>.</p></td>
+    </tr>
+    <tr>
+      <th>strata_variables</th>
+      <td><p></p></td>
+    </tr>
+    <tr>
+      <th>strata_proportions_years_status</th>
+      <td><p></p></td>
+    </tr>
+    <tr>
+      <th>strata_proportions_years_growth</th>
+      <td><p></p></td>
+    </tr>
+    <tr>
+      <th>summary_years</th>
+      <td><p></p></td>
+    </tr>
+    <tr>
+      <th>create_scale_score_deciles</th>
+      <td><p></p></td>
+    </tr>
+    <tr>
+      <th>sample_size</th>
+      <td><p></p></td>
+    </tr>
+    <tr>
+      <th>bootstrap_iterations</th>
+      <td><p></p></td>
+    </tr>
+    <tr>
+      <th>summary_statistic</th>
+      <td><p></p></td>
+    </tr>
+    <tr>
+      <th>aggregation_group</th>
+      <td><p></p></td>
+    </tr>
+    </table>
+
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Function calculates a summary statistic of existing data (e.g., mean) by re-sampling based upon designated strata proportions</p>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Function returns either a list (default) containing the summary statistic (e.g., mean) and standard deviation (i.e., standard error) for the bootstrap sample of that statistic or funtion returns a vector containing the bootstrap replication values.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'>### bootstrapSRS_SGP needs an object of class SGP run.</span>
+<span class='co'>### See the Step 6 comparisons in the Demonstration Learning Loss Analytics for examples</span>
+<span class='co'>### https://github.com/CenterForAssessment/SGP_Research/tree/master/Demonstration/Learning_Loss_Analysis/Step_6_Summary_Comparisons </span></div></pre>
+  </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+    <h2>Contents</h2>
+    <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#details">Details</a></li>
+      <li><a href="#value">Value</a></li>
+      <li><a href="#examples">Examples</a></li>
+    </ul>
+
+    <h2>Author</h2>
+    Damian W. Betebenner <a href='mailto:dbetebenner@nciea.org'>dbetebenner@nciea.org</a> 
   </div>
 </div>
 

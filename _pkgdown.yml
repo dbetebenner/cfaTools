@@ -16,12 +16,12 @@ navbar:
     left:
     - text: Getting Started
       href: articles/cfaTools.html
-    - text: Reference
-      href: reference/index.html
     - text: Vignettes
       menu:
       - text: "Exploring Ho's (2021) Fair Trend Metric"
         href: articles/fair_trend.html
+    - text: Reference
+      href: reference/index.html
     - text: News
       menu:
       - text: "Release notes"

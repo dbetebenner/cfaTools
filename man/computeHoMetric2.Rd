@@ -24,9 +24,10 @@ computeHoMetric2(
 \author{Nathan Dadey \email{ndadey@nciea.org} }
 
 \examples{
-### computeHoMetric2 needs an object of class SGP run.
-### See:
 ### https://centerforassessment.github.io/cfaTools/articles/fair_trend.html
+	\dontrun{
+		computeHoMetric2(covid.data = SGPdata::sgpData_LONG_COVID[YEAR <= 2021])
+	}
 }
 
 \keyword{ misc }

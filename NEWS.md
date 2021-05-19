@@ -1,3 +1,7 @@
+# cfaTools 0.0-0.97
+
+* Adding draft function computeHoMetric2 and vignette 
+
 # cfaTools 0.0-0.7
 
 * Getting GitHub workflows working for R-CMD check and adding toOrdinal dependency 

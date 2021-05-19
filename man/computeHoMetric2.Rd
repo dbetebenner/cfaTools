@@ -6,6 +6,7 @@
 \usage{
 computeHoMetric2(
   covid.data
+)
 }
 
 \arguments{

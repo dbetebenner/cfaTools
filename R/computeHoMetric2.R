@@ -1,5 +1,5 @@
 ## Fair Trend 
-computeHoMetric2 <- function(covid.data = SGPdata::sgpData_LONG_COVID[YEAR <= 2021]){
+computeHoMetric2 <- function(covid.data){
   #write.csv(covid.data, file="Simulated_Panel_Data.csv")
   
   #Fair Trend is operationalized as a comparison between expected and observed scores

@@ -18,8 +18,10 @@ navbar:
       href: articles/cfaTools.html
     - text: Vignettes
       menu:
-      - text: "Exploring Ho's (2021) Fair Trend Metric"
+      - text: "Exploring Ho's Fair Trend Metric"
         href: articles/fair_trend.html
+      - text: "Simulating Missing Data with amputeScaleScore"
+        href: articles/Simulating_Missing_Data.html
     - text: Reference
       href: reference/index.html
     - text: News

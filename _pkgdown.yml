@@ -27,6 +27,8 @@ navbar:
     - text: News
       menu:
       - text: "Release notes"
+      - text: "cfaTools 0.0-1.0"
+        href: articles/releases/cfaTools-0.0-1.0.html
       - text: "cfaTools 0.0-0.5"
         href: articles/releases/cfaTools-0.0-0.5.html
       - text: "cfaTools 0.0-0.1"
@@ -45,5 +47,11 @@ reference:
       - title: Center for Assessment Tools for use in examining large scale student educational assessment data
         desc:  Functions for use with large scale student achievement data
         contents:
-            - cfaGaps
+            - amputeScaleScore
             - bootstrapSRS
+            - bootstrapSRS_SGP
+            - cfaGaps
+            - computeHoMetric2
+            - imputationSummary
+            - imputeScaleScore
+            - messageLog

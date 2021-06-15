@@ -1,0 +1,23 @@
+---
+title: "cfaTools 0.0-1.0"
+date: "June 15th, 2021"
+---
+
+```{r, echo = FALSE}
+is_html_output = function() {
+  knitr::opts_knit$get("rmarkdown.pandoc.to")=="html"
+}
+knitr::opts_chunk$set(collapse = TRUE, comment = "", prompt=TRUE, fig.dpi = 96)
+if (is_html_output()) {
+    options(width=1000)
+}
+```
+
+This is a major update to the **cfaTools** package including numerous functions to help with imputation with missing data due to pandemi related testing interruptions. In addition
+a function for the calculation of Andrew Ho's Fair Trend metric (2nd metric) he described is also include. Please reference the following vignettes for more details:
+
+* [Fair Trend Metric](https://centerforassessment.github.io/cfaTools/articles/fair_trend.html)
+* [Missing Data Imputation](https://centerforassessment.github.io/cfaTools/articles/Simulating_Missing_Data.html)
+
+
+For complete `cfaTools` documentation, see the [documentation](https://CenterForAssessment.github.io/cfaTools/reference/cfaTools.html)

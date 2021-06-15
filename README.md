@@ -4,7 +4,7 @@ cfaTools
 [![R-CMD-check](https://github.com/CenterForAssessment/cfaTools/workflows/R-CMD-check/badge.svg)](https://github.com/CenterForAssessment/cfaTools/actions)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/centerforassessment/cfaTools?branch=master&svg=true)](https://ci.appveyor.com/project/centerforassessment/cfaTools)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/cfaTools)](http://cran.r-project.org/package=cfaTools)
-[![Development Version](https://img.shields.io/badge/devel-0.0--0.99-brightgreen.svg)](https://github.com/CenterForAssessment/cfaTools)
+[![Development Version](https://img.shields.io/badge/devel-0.0--1.0-brightgreen.svg)](https://github.com/CenterForAssessment/cfaTools)
 [![License](http://img.shields.io/badge/license-GPL%203-brightgreen.svg?style=flat)](https://github.com/CenterForAssessment/cfaTools/blob/master/LICENSE.md)
 
 

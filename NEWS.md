@@ -1,14 +1,18 @@
+# cfaTools 0.0-0.99
+
+* Adding scale score amputation and imputation functions
+
 # cfaTools 0.0-0.97
 
-* Adding draft function computeHoMetric2 and vignette 
+* Adding draft function computeHoMetric2 and vignette
 
 # cfaTools 0.0-0.7
 
-* Getting GitHub workflows working for R-CMD check and adding toOrdinal dependency 
+* Getting GitHub workflows working for R-CMD check and adding toOrdinal dependency
 
 # cfaTools 0.0-0.6
 
-* Update of documentation 
+* Update of documentation
 
 # cfaTools 0.0-0.5
 

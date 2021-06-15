@@ -82,7 +82,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/fair_trend.html">Exploring Ho's (2021) Fair Trend Metric</a>
+      <a href="../articles/fair_trend.html">Exploring Ho's Fair Trend Metric</a>
+    </li>
+    <li>
+      <a href="../articles/Simulating_Missing_Data.html">Simulating Missing Data with amputeScaleScore</a>
     </li>
   </ul>
 </li>
@@ -97,6 +100,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li class="dropdown-header">Release notes</li>
+    <li>
+      <a href="../articles/releases/cfaTools-0.0-1.0.html">cfaTools 0.0-1.0</a>
+    </li>
     <li>
       <a href="../articles/releases/cfaTools-0.0-0.5.html">cfaTools 0.0-0.5</a>
     </li>
@@ -134,7 +140,7 @@
     <div class="page-header">
       <h1>
         Reference
-        <small>version&nbsp;0.0-0.95</small>
+        <small>version&nbsp;0.0-1.0</small>
       </h1>
     </div>
 
@@ -156,15 +162,51 @@
         <tr>
           <!--  -->
           <td>
-            <p><code><a href="cfaGaps.html">cfaGaps</a></code> </p>
+            <p><code><a href="amputeScaleScore.html">amputeScaleScore</a></code> </p>
           </td>
-          <td><p>Diagnostic achievement gap information</p></td>
+          <td><p>A function for removing cases from a SGP style dataset</p></td>
         </tr><tr>
           <!--  -->
           <td>
             <p><code><a href="bootstrapSRS.html">bootstrapSRS</a></code> </p>
           </td>
           <td><p>Bootstrap sampling function for use with pre-designated strata proportions</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="bootstrapSRS_SGP.html">bootstrapSRS_SGP</a></code> </p>
+          </td>
+          <td><p>Higher level function for using bootstrap_SRS with SGP objects</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="cfaGaps.html">cfaGaps</a></code> </p>
+          </td>
+          <td><p>Diagnostic achievement gap information</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="computeHoMetric2.html">computeHoMetric2</a></code> </p>
+          </td>
+          <td><p>Compute Ho Metric 2 "Fair Trend"</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="imputationSummary.html">imputationSummary</a></code> </p>
+          </td>
+          <td><p>A function for pooling imputed scale scores, SGPs and Baseline SGPs</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="imputeScaleScore.html">imputeScaleScore</a></code> </p>
+          </td>
+          <td><p>Multiple imputation of missing scale scores for SGP style data</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="messageLog.html">messageLog</a></code> </p>
+          </td>
+          <td><p>A function for creating customized log reports and saving message info.</p></td>
         </tr>
       </tbody>
       </table>
@@ -185,7 +227,7 @@
 </div>
 
 <div class="author">
-  <p>Developed & Maintained by <a href='https://github.com/dbetebenner'><img src='https://centerforassessment.github.io/assets/dbetebenner.png' height='20' /> Damian W. Betebenner</a>, <a href='https://github.com/adamvi'><img src='https://centerforassessment.github.io/assets/adamvi.png' height='20' /> Adam R. Van Iwaarden</a> & <a href='https://github.com/ndadey'><img src='https://avatars0.githubusercontent.com/u/17909944' height='20' /> Nathan Dadey</a>, Joseph Martineau.</p>
+  <p>Developed & Maintained by <a href='https://github.com/dbetebenner'><img class='img-author' src='https://centerforassessment.github.io/assets/dbetebenner.png' height='20' /> Damian W. Betebenner</a>, <a href='https://github.com/adamvi'><img class='img-author' src='https://centerforassessment.github.io/assets/adamvi.png' height='20' /> Adam R. Van Iwaarden</a> & <a href='https://github.com/ndadey'><img class='img-author' src='https://avatars0.githubusercontent.com/u/17909944' height='20' /> Nathan Dadey</a>, Joseph Martineau.</p>
 </div>
 
 <script>

@@ -2,7 +2,7 @@
 \alias{cfaTools-package}
 \alias{cfaTools}
 \docType{package}
-\title{Tools for Large Scale Educational Assessment Analysis
+\title{cfaTools: Tools for Large Scale Educational Assessment Analysis
 }
 \description{
 Center for Assessment developed Tools for Large Scale Educational Assessment.
@@ -12,8 +12,8 @@ Center for Assessment developed Tools for Large Scale Educational Assessment.
 \tabular{ll}{
 Package: \tab cfaTools\cr
 Type: \tab Package\cr
-Version: \tab 0.0-0.99\cr
-Date: \tab 2021-6-11\cr
+Version: \tab 0.0-1.0\cr
+Date: \tab 2021-6-15\cr
 License: \tab GPL-3\cr
 LazyLoad: \tab yes\cr
 }

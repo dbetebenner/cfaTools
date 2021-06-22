@@ -8,7 +8,9 @@ available for the "mice" package.
 imputeScaleScore(
   impute.data,
   additional.data = NULL,
+  include.additional.missing = TRUE,
   compact.results = TRUE,
+  return.current.year.only = FALSE,
   diagnostics.dir = getwd(),
   growth.config = NULL,
   status.config = NULL,
@@ -31,15 +33,25 @@ imputeScaleScore(
 \arguments{
   \item{impute.data}{The incomplete dataset in which to impute student scale score values.
   }
-  \item{additional.data}{the function will return only data that is required for
+  \item{additional.data}{The function will return only data that is required for
   a SGP analysis (based on growth.config). This allows for the addition of more
   data (e.g. 2019 grades not used as priors)
+  }
+  \item{include.additional.missing}{TRUE. The function will create scale scores
+  for students present in the most recent prior year without rows in the current
+  year. If FALSE, assumes that rows with \code{SCALE_SCORE = NA} are present in
+  the current year (and with \code{VALID_CASE == "VALID_CASE"}), and scores will
+  only be imputed for those cases/rows.
   }
   \item{compact.results}{By default (TRUE), the function returns a single data.table
   object with a column added for each requested imputation (M). If FALSE, function
   will return a list of longitudinal datassets with the current (imputed) and prior
   (unchanged) student records. This is helpful for diagnostics and ease of use,
   but also produces more redundant prior data than needed.
+  }
+  \item{return.current.year.only}{FALSE. Return all records from the long data used
+  to create the imputed scale scores.  If TRUE, only records from the current year
+  are returned.
   }
   \item{diagnostics.dir}{Directory path for diagnostic plots to be placed. Default is
   the working directory. Additional subdirectories are created internally as needed.

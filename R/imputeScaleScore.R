@@ -1,7 +1,9 @@
 `imputeScaleScore` <- function(
     impute.data,
     additional.data = NULL,
+    include.additional.missing = TRUE,
     compact.results = TRUE,
+    return.current.year.only = FALSE,
     diagnostics.dir = getwd(),
     growth.config = NULL,
     status.config = NULL,
@@ -105,10 +107,14 @@
 
     if (imp.iter$analysis.type == "GROWTH") {
       ###   convert long to wide
-      tmp.wide <- dcast(tmp.long, ID ~ YEAR, sep=".", drop=FALSE, value.var=long.to.wide.vars)
+      tmp.wide <- dcast(tmp.long, ID ~ YEAR, sep=".", drop=FALSE, value.var=c("VALID_CASE", long.to.wide.vars))
 
       ###   Exclude kids missing current and most recent year's scale score
       tmp.wide <- tmp.wide[!(is.na(get(tail(prior.scores, 1))) & is.na(get(current.score))),]
+
+      if (!include.additional.missing) {
+        tmp.wide <- tmp.wide[!is.na(get(paste0("VALID_CASE.", current.year))),]
+      }
 
       meas.list <- vector(mode = "list", length = length(long.to.wide.vars))
       meas.list <- lapply(long.to.wide.vars, function(f) meas.list[[f]] <- grep(paste0(f, "[.]"), names(tmp.wide)))
@@ -132,12 +138,16 @@
         long.final <- data.table(dplyr::ungroup(tidyr::fill(dplyr::group_by(long.final, ID),
                                 tidyselect::all_of(demographics), .direction="downup")))
 
-        ###   Fill in school numbers (CLUDGE) - try to figure out how to do with random forrest or something better...
+        ###   Fill in school numbers
         if ("SCHOOL_NUMBER" %in% institutions) {
-          tmp.long.elem <- long.final[GRADE %in% c(3:5)]
+          # if (!is.character(long.final[, SCHOOL_NUMBER])) long.final[, SCHOOL_NUMBER := as.character(SCHOOL_NUMBER)]
+          # invisible(long.final[is.na(SCHOOL_NUMBER), SCHOOL_NUMBER := -99999])
+
+          ##  (CLUDGE) - try to figure out how to do with random forrest or something better...
+          tmp.long.elem <- long.final[GRADE %in% c(0:5)]
           if (length(unique(tmp.long.elem[, GRADE])) == 1L) {
-            tmp.long.elem[is.na(SCHOOL_NUMBER), SCHOOL_NUMBER :=
-              sample(unique(na.omit(tmp.long.elem$SCHOOL_NUMBER)), size=sum(is.na(tmp.long.elem$SCHOOL_NUMBER)), replace=TRUE)]
+            invisible(tmp.long.elem[is.na(SCHOOL_NUMBER), SCHOOL_NUMBER :=
+              sample(unique(na.omit(tmp.long.elem$SCHOOL_NUMBER)), size=sum(is.na(tmp.long.elem$SCHOOL_NUMBER)), replace=TRUE)])
           } else {
             tmp.long.elem <- data.table(dplyr::ungroup(tidyr::fill(dplyr::group_by(tmp.long.elem, ID),
                                           SCHOOL_NUMBER, .direction="updown")))
@@ -145,22 +155,32 @@
 
           tmp.long.mid <- long.final[GRADE %in% c(6:8)]
           if (length(unique(tmp.long.mid[, GRADE])) == 1L) {
-            tmp.long.mid[is.na(SCHOOL_NUMBER), SCHOOL_NUMBER :=
-              sample(unique(na.omit(tmp.long.mid$SCHOOL_NUMBER)), size=sum(is.na(tmp.long.mid$SCHOOL_NUMBER)), replace=TRUE)]
+            invisible(tmp.long.mid[is.na(SCHOOL_NUMBER), SCHOOL_NUMBER :=
+              sample(unique(na.omit(tmp.long.mid$SCHOOL_NUMBER)), size=sum(is.na(tmp.long.mid$SCHOOL_NUMBER)), replace=TRUE)])
           } else {
             tmp.long.mid <- data.table(dplyr::ungroup(tidyr::fill(dplyr::group_by(tmp.long.mid, ID),
                                         SCHOOL_NUMBER, .direction="updown")))
           }
 
-          long.final <- rbindlist(list(tmp.long.elem, tmp.long.mid))
+          tmp.long.high <- long.final[GRADE %in% c(9:12)]
+          if (length(unique(tmp.long.high[, GRADE])) == 1L) {
+            invisible(tmp.long.high[is.na(SCHOOL_NUMBER), SCHOOL_NUMBER :=
+              sample(unique(na.omit(tmp.long.high$SCHOOL_NUMBER)), size=sum(is.na(tmp.long.high$SCHOOL_NUMBER)), replace=TRUE)])
+          } else {
+            tmp.long.high <- data.table(dplyr::ungroup(tidyr::fill(dplyr::group_by(tmp.long.high, ID),
+                                        SCHOOL_NUMBER, .direction="updown")))
+          }
+
+          long.final <- rbindlist(list(tmp.long.elem, tmp.long.mid, tmp.long.high))
         }
 
         if ("DISTRICT_NUMBER" %in% institutions) {
+          # invisible(long.final[is.na(DISTRICT_NUMBER), DISTRICT_NUMBER := -99999])
           long.final <- data.table(dplyr::ungroup(tidyr::fill(dplyr::group_by(long.final, ID),
-                                  DISTRICT_NUMBER, .direction="updown")))
+                                   DISTRICT_NUMBER, .direction="updown")))
         }
 
-        long.final[, YEAR := as.character(factor(YEAR, labels = imp.iter[["sgp.panel.years"]]))]
+        invisible(long.final[, YEAR := as.character(factor(YEAR, labels = imp.iter[["sgp.panel.years"]]))])
 
         if (!impute.long) {
           ###   re-widen
@@ -377,6 +397,7 @@
                   gsub("[.]", "", impute.method), ifelse(impute.long, "_LONG", ""), "_M_", M, "__maxit_", maxit, "__density.pdf")))
     if (!impute.long | imp.iter$analysis.type == "STATUS") {
       print(densityplot(imp, eval(parse(text=paste0("~", current.score)))))
+      print(densityplot(imp))
     } else print(densityplot(imp))
     invisible(dev.off())
 
@@ -392,10 +413,12 @@
       }
 
       setnames(wide.imputed, names(wide.imputed)[-1], c("SCALE_SCORE", paste0("SCORE_IMP_", names(wide.imputed)[-c(1:2)])))
-      wide.imputed[, YEAR := eval(current.year)]
+      invisible(wide.imputed[, YEAR := eval(current.year)])
       setkey(wide.imputed, ID, YEAR, SCALE_SCORE)
       setkey(long.final, ID, YEAR, SCALE_SCORE)
-      imp.list[[K]] <- wide.imputed[long.final]
+      if (return.current.year.only) {
+        imp.list[[K]] <- long.final[wide.imputed]
+      } else imp.list[[K]] <- wide.imputed[long.final]
     } else {
       if (!impute.long | imp.iter$analysis.type == "STATUS") {
         tmp.wide[, IMPUTED := is.na(get(current.score))]
@@ -404,11 +427,13 @@
         setkey(long.final, ID, YEAR)
       }
       for (m in seq(M)) {
-        imp.list[[m]][[K]] <- long.imputed[.imp==m][long.final]
-        imp.list[[m]][[K]][, IMPUTED_SS := FALSE]
-        imp.list[[m]][[K]][is.na(SCALE_SCORE) & YEAR == eval(current.year), IMPUTED_SS := TRUE]
-        imp.list[[m]][[K]][is.na(SCALE_SCORE) & YEAR == eval(current.year), SCALE_SCORE := get(current.score)]
-        imp.list[[m]][[K]][, c(".imp", current.score) := NULL]
+        if (return.current.year.only) {
+          imp.list[[m]][[K]] <- long.final[long.imputed[.imp==m]]
+        } else imp.list[[m]][[K]] <- long.imputed[.imp==m][long.final]
+        invisible(imp.list[[m]][[K]][, IMPUTED_SS := FALSE])
+        invisible(imp.list[[m]][[K]][is.na(SCALE_SCORE) & YEAR == eval(current.year), IMPUTED_SS := TRUE])
+        invisible(imp.list[[m]][[K]][is.na(SCALE_SCORE) & YEAR == eval(current.year), SCALE_SCORE := get(current.score)])
+        invisible(imp.list[[m]][[K]][, c(".imp", current.score) := NULL])
       }
     }
   }  ###  END K

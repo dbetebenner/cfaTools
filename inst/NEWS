@@ -1,3 +1,7 @@
+# cfaTools 0.0-1.1
+
+* Update scale score imputation functions after first real world use.
+
 # cfaTools 0.0-0.99
 
 * Adding scale score amputation and imputation functions

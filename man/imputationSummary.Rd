@@ -8,7 +8,8 @@ for imputed score data and SGP analyses.
 imputationSummary(
   data.to.summarize,
   institution.level = NULL,
-  summary.level = NULL)
+  summary.level = NULL,
+  standardize.scores = NULL)
 }
 
 \arguments{
@@ -21,6 +22,10 @@ imputationSummary(
   }
   \item{summary.level}{Additional aggregation levels. E.g., "GRADE" and/or "CONTENT_AREA".
   }
+  \item{standardize.scores}{If not \code{NULL} (default), then level by which Scale
+  scores are standardized (by mean and SD of the observed scores). E.g., "GRADE"
+  to standardize by grade for cross grade comparisons.
+  }
 }
 
 
@@ -31,9 +36,9 @@ tag \code{_IMPUTED_} added. For example, "SCALE_SCORE_IMPUTED_1", "SGP_IMPUTED_1
 "SGP_BASELINE_IMPUTED_1". That is, the data is in a wide format (not stacked by imputation).
 }
 
-\value{Function returns a list including a summary table disaggregated by the requested
-factors and a table including the overall mean differences and correlations between
-the observed and (averaged/pooled) imputed summary statistics. The summary table
+\value{Function returns a list including a summary table disaggregated by the requested factors
+and a table including the overall mean differences and correlations between the observed
+and (averaged/pooled) imputed values (i.e. mean SGPs and scale scores). The summary table
 includes several statistics derived for the evaluation of multiple imputation analyses.
 }
 

@@ -147,7 +147,8 @@ for imputed score data and SGP analyses.</p>
     <pre class="usage"><span class='fu'>imputationSummary</span>(
   <span class='no'>data.to.summarize</span>,
   <span class='kw'>institution.level</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>summary.level</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+  <span class='kw'>summary.level</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>standardize.scores</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -167,6 +168,12 @@ for imputed score data and SGP analyses.</p>
       <th>summary.level</th>
       <td><p>Additional aggregation levels. E.g., "GRADE" and/or "CONTENT_AREA".</p></td>
     </tr>
+    <tr>
+      <th>standardize.scores</th>
+      <td><p>If not <code>NULL</code> (default), then level by which Scale
+  scores are standardized (by mean and SD of the observed scores). E.g., "GRADE"
+  to standardize by grade for cross grade comparisons.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
@@ -178,9 +185,9 @@ tag <code>_IMPUTED_</code> added. For example, "SCALE_SCORE_IMPUTED_1", "SGP_IMP
 "SGP_BASELINE_IMPUTED_1". That is, the data is in a wide format (not stacked by imputation).</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Function returns a list including a summary table disaggregated by the requested
-factors and a table including the overall mean differences and correlations between
-the observed and (averaged/pooled) imputed summary statistics. The summary table
+    <p>Function returns a list including a summary table disaggregated by the requested factors
+and a table including the overall mean differences and correlations between the observed
+and (averaged/pooled) imputed values (i.e. mean SGPs and scale scores). The summary table
 includes several statistics derived for the evaluation of multiple imputation analyses.</p>
 
   </div>

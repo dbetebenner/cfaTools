@@ -147,7 +147,9 @@ available for the "mice" package.</p>
     <pre class="usage"><span class='fu'>imputeScaleScore</span>(
   <span class='no'>impute.data</span>,
   <span class='kw'>additional.data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>include.additional.missing</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>compact.results</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>return.current.year.only</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>diagnostics.dir</span> <span class='kw'>=</span> <span class='fu'>getwd</span>(),
   <span class='kw'>growth.config</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>status.config</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -175,9 +177,17 @@ available for the "mice" package.</p>
     </tr>
     <tr>
       <th>additional.data</th>
-      <td><p>the function will return only data that is required for
+      <td><p>The function will return only data that is required for
   a SGP analysis (based on growth.config). This allows for the addition of more
   data (e.g. 2019 grades not used as priors)</p></td>
+    </tr>
+    <tr>
+      <th>include.additional.missing</th>
+      <td><p>TRUE. The function will create scale scores
+  for students present in the most recent prior year without rows in the current
+  year. If FALSE, assumes that rows with <code>SCALE_SCORE = NA</code> are present in
+  the current year (and with <code>VALID_CASE == "VALID_CASE"</code>), and scores will
+  only be imputed for those cases/rows.</p></td>
     </tr>
     <tr>
       <th>compact.results</th>
@@ -186,6 +196,12 @@ available for the "mice" package.</p>
   will return a list of longitudinal datassets with the current (imputed) and prior
   (unchanged) student records. This is helpful for diagnostics and ease of use,
   but also produces more redundant prior data than needed.</p></td>
+    </tr>
+    <tr>
+      <th>return.current.year.only</th>
+      <td><p>FALSE. Return all records from the long data used
+  to create the imputed scale scores.  If TRUE, only records from the current year
+  are returned.</p></td>
     </tr>
     <tr>
       <th>diagnostics.dir</th>

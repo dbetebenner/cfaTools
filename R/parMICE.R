@@ -7,8 +7,8 @@ parMICE <- function(
 
   if (is.null(cluster.type)) cluster.type <- "PSOCK"
 
-  cl <- makeCluster(nnodes, type = cluster.type)
-  if (!is.na(seed)){clusterSetRNGStream(cl, seed)}
+  cl <- parallel::makeCluster(nnodes, type = cluster.type)
+  if (!is.na(seed)){parallel::clusterSetRNGStream(cl, seed)}
 
   tmp <- list(...)
   if ("kpmm" %in% names(tmp)){kpmm <- tmp[["kpmm"]]} else {kpmm <- 5}
@@ -18,39 +18,40 @@ parMICE <- function(
 
   if (maxit==0){stop("The argument maxit=0 is not relevant for parallel calculation, use the mice function from the mice package")}
 
-  clusterExport(cl, list("mice",
-                         "don.na",
-                         "method",
-                         "predictorMatrix",
-                         "visitSequence",
-                         "post",
-                         "defaultMethod",
-                         "maxit",
-                         "where",
-                         "blots",
-                         "data.init",
-                         # "find.defaultMethod", # from `micemd` package -- doesn't seem like we need the dependency
-                         "nnodes",
-                         "path.outfile",
-                         "packages",
-                         "kpmm", "method_est", "incluster", "nburn"
+  parallel::clusterExport(cl,
+                          list("mice",
+                               "don.na",
+                               "method",
+                               "predictorMatrix",
+                               "visitSequence",
+                               "post",
+                               "defaultMethod",
+                               "maxit",
+                               "where",
+                               "blots",
+                               "data.init",
+                               # "find.defaultMethod", # from `micemd` package -- doesn't seem like we need the dependency
+                               "nnodes",
+                               "path.outfile",
+                               "packages",
+                               "kpmm", "method_est", "incluster", "nburn"
                        ), envir = environment())
 
-  clusterEvalQ(cl, eval(parse(text=paste0("require(", packages, ")", collapse=";"))))
+  parallel::clusterEvalQ(cl, eval(parse(text=paste0("require(", packages, ")", collapse=";"))))
 
-  if (!missing(blocks)){clusterExport(cl, list("blocks"), envir = environment())}
-  if (!missing(formulas)){clusterExport(cl, list("formulas"), envir = environment())}
+  if (!missing(blocks)){parallel::clusterExport(cl, list("blocks"), envir = environment())}
+  if (!missing(formulas)){parallel::clusterExport(cl, list("formulas"), envir = environment())}
 
   if (!is.null(path.outfile)){
-    clusterEvalQ(cl, sink(paste0(path.outfile, "/output", Sys.getpid(), ".txt")))
+    parallel::clusterEvalQ(cl, sink(paste0(path.outfile, "/output", Sys.getpid(), ".txt")))
   }
 
   if (!missing(blocks) & !missing(formulas)){
-    res <- parSapply(cl, as.list(1:m), FUN=function(mtmp, don.na, method, predictorMatrix, visitSequence,
+    res <- parallel::parSapply(cl, as.list(1:m), FUN=function(mtmp, don.na, method, predictorMatrix, visitSequence,
                                                  where, blocks, formulas, blots, post, defaultMethod, data.init,
                                                  maxit, nnodes, kpmm, method_est, incluster, nburn, ...) {
 
-      res.mice <- mice(data=don.na, m=1, method = method, predictorMatrix=predictorMatrix,
+      res.mice <- mice::mice(data=don.na, m=1, method = method, predictorMatrix=predictorMatrix,
                      visitSequence=visitSequence, where=where, blocks=blocks,
                      formulas=formulas, blots=blots, post=post, defaultMethod=defaultMethod,
                      data.init=data.init, maxit = maxit, printFlag=TRUE, seed=NA,
@@ -74,16 +75,16 @@ parMICE <- function(
     nburn=nburn, packages=packages,
     simplify = FALSE, ...)
   } else if (missing(blocks) & missing(formulas)){
-    res <- parSapply(cl, as.list(1:m), FUN=function(mtmp, don.na, method, predictorMatrix,
+    res <- parallel::parSapply(cl, as.list(1:m), FUN=function(mtmp, don.na, method, predictorMatrix,
                                                     visitSequence, where, blots, post,
                                                     defaultMethod, data.init, maxit, nnodes,
                                                     kpmm, method_est, incluster, nburn, ...) {
 
-      res.mice <- mice(data=don.na, m=1, method = method, predictorMatrix=predictorMatrix,
-                       visitSequence=visitSequence, where=where, blots=blots, post=post,
-                       defaultMethod=defaultMethod, data.init=data.init, maxit = maxit,
-                       printFlag=TRUE, seed=NA, method_est=method_est,
-                       incluster=incluster, nburn=nburn, kpmm=kpmm, ...)
+      res.mice <- mice::mice(data=don.na, m=1, method = method, predictorMatrix=predictorMatrix,
+                             visitSequence=visitSequence, where=where, blots=blots, post=post,
+                             defaultMethod=defaultMethod, data.init=data.init, maxit = maxit,
+                             printFlag=TRUE, seed=NA, method_est=method_est,
+                             incluster=incluster, nburn=nburn, kpmm=kpmm, ...)
     }, don.na=don.na,
     method=method,
     predictorMatrix=predictorMatrix,
@@ -103,7 +104,7 @@ parMICE <- function(
 
   } else {stop("blocks or formulas arguments are not defined. Currently, this case is not handled by the mice.par function")}
 
-  stopCluster(cl)
+  parallel::stopCluster(cl)
 
   res.out <- res[[1]]
   res.out$call <- match.call()
@@ -113,9 +114,9 @@ parMICE <- function(
   res.out$imp <- lapply(res.out$imp, function(xx){if (!is.null(xx)){yy <- xx;colnames(yy) <- as.character(seq(ncol(xx)));return(yy)} else {return(xx)}})
   res.out$seed <- seed
   res.out$lastSeedValue <- lapply(res, "[[", "lastSeedValue")
-  res.out$chainMean <- do.call(abind, lapply(res, "[[", "chainMean"), 3)
+  res.out$chainMean <- do.call(abind::abind, lapply(res, "[[", "chainMean"), 3)
   dimnames(res.out$chainMean)[[3]] <- paste("Chain", seq(m))
-  res.out$chainVar <- do.call(abind, lapply(res, "[[", "chainVar"), 3)
+  res.out$chainVar <- do.call(abind::abind, lapply(res, "[[", "chainVar"), 3)
   dimnames(res.out$chainVar)[[3]] <- paste("Chain", seq(m))
   res.out$loggedEvents <- lapply(res, "[[", "loggedEvents")
   class(res.out) <- "mids"

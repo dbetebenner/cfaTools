@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="https://centerforassessment.github.io/assets/favicon.png" sizes="16x16">
 
-<meta property="og:title" content="cfaTools • cfaTools: Tools for Large Scale Educational Assessment Analysis — cfaTools-package"/>
-<meta property="og:description" content="cfaTools • cfaTools: Tools for Large Scale Educational Assessment Analysis — cfaTools-package"/>
+<meta property="og:title" content="cfaTools • Calculate Gamma effect sizes from a longitudinal data set. — gammaEffectSizeLong"/>
+<meta property="og:description" content="cfaTools • Calculate Gamma effect sizes from a longitudinal data set. — gammaEffectSizeLong"/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://centerforassessment.github.io/cfaTools"/>
 <meta property="og:image" content="https://centerforassessment.github.io/assets/favicon.png"/>
@@ -17,10 +17,10 @@
 <meta name="twitter:site" content="@NCIEA1"/>
 <meta name="twitter:creator" content="@dbetebenner"/>
 <meta name="twitter:image" content="https://centerforassessment.github.io/assets/favicon.png"/>
-<meta name="twitter:title" content="cfaTools • cfaTools: Tools for Large Scale Educational Assessment Analysis — cfaTools-package"/>
-<meta name="twitter:description" content="cfaTools • cfaTools: Tools for Large Scale Educational Assessment Analysis — cfaTools-package"/>
+<meta name="twitter:title" content="cfaTools • Calculate Gamma effect sizes from a longitudinal data set. — gammaEffectSizeLong"/>
+<meta name="twitter:description" content="cfaTools • Calculate Gamma effect sizes from a longitudinal data set. — gammaEffectSizeLong"/>
 
-<title>cfaTools • cfaTools: Tools for Large Scale Educational Assessment Analysis — cfaTools-package</title>
+<title>cfaTools • Calculate Gamma effect sizes from a longitudinal data set. — gammaEffectSizeLong</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -138,44 +138,87 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>cfaTools: Tools for Large Scale Educational Assessment Analysis</h1>
+    <h1>Calculate Gamma effect sizes from a longitudinal data set.</h1>
     </div>
 
-    <p>Center for Assessment developed Tools for Large Scale Educational Assessment.</p>
+    <p>Function for calculating non-parametric effect size for any specified
+quantile(s) as proposed by Akinshin.</p>
 
+    <pre class="usage"><span class='fu'>gammaEffectSizeLong</span>(
+        <span class='no'>data_table</span>,
+  <span class='no'>variable</span>,
+  <span class='no'>year_1</span>,
+  <span class='no'>year_2</span>,
+  <span class='kw'>quantiles</span><span class='kw'>=</span><span class='fl'>1</span>:<span class='fl'>9</span>/<span class='fl'>10</span>,
+  <span class='kw'>digits</span><span class='kw'>=</span><span class='fl'>3</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>data_table</th>
+      <td><p>Longitudinal dataset (e.g., from the SGP package) from which
+	to calculate effect sizes over specified years.</p></td>
+    </tr>
+    <tr>
+      <th>variable</th>
+      <td><p>Character (length 1) identifying the variable of interest (e.g., &#8216;SCALE_SCORE&#8217;).</p></td>
+    </tr>
+    <tr>
+      <th>year_1</th>
+      <td><p>Character (length 1) identifying the comparison/control year.
+	Variable assumed to be named &#8216;YEAR&#8217;.</p></td>
+    </tr>
+    <tr>
+      <th>year_2</th>
+      <td><p>Character (length 1) identifying the year of interest (treatment).
+	Variable assumed to be named &#8216;YEAR&#8217;.</p></td>
+    </tr>
+    <tr>
+      <th>quantiles</th>
+      <td><p>Argument to specify quantile(s) to evaluate (between 0 and 1). Default is Deciles.</p></td>
+    </tr>
+    <tr>
+      <th>digits</th>
+      <td><p>Number of digits to round results to.</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <table><tr><td>
-Package: </td>
-</tr><tr><td> cfaTools</td>
-</tr><tr><td>
-Type: </td>
-</tr><tr><td> Package</td>
-</tr><tr><td>
-Version: </td>
-</tr><tr><td> 0.0-1.2</td>
-</tr><tr><td>
-Date: </td>
-</tr><tr><td> 2021-6-30</td>
-</tr><tr><td>
-License: </td>
-</tr><tr><td> GPL-3</td>
-</tr><tr><td>
-LazyLoad: </td>
-</tr><tr><td> yes</td>
-</tr></table>
+    <p>Typical use of the function is to submit scale score or SGP data from
+ which to calculate effect sizes (standardized differences in the two distributions
+ at the given quantiles). This function applies the lower level function Andrey Akinshin
+ proposed in a June 25, 2020 blog post - <a href = 'https://aakinshin.net/posts/nonparametric-effect-size/'>https://aakinshin.net/posts/nonparametric-effect-size/</a>
+ to longitudinal data typically produced from SGP analyses. Usually done within
+ a <code>data.table</code></p>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>Function returns an effect size (numeric) vector of length <code>quantiles</code>
+that is easily combined into a table using <a href = 'https://github.com/Rdatatable/data.table/'>data.table</a>.
+See example below.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>        <span class='fu'>not_run</span>({
+                <span class='co'>###  require(SGPdata)</span>
+                <span class='co'>###  require(data.table)</span>
+                <span class='no'>sgpData_LONG_COVID</span>[,
+                        <span class='fu'>as.list</span>(<span class='fu'>gammaEffectSizeLong</span>(<span class='no'>.SD</span>, <span class='st'>"SCALE_SCORE"</span>, <span class='st'>"2019"</span>, <span class='st'>"2021"</span>)),
+                                <span class='kw'>keyby</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"CONTENT_AREA"</span>, <span class='st'>"GRADE"</span>)]
+
+})</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       <li><a href="#details">Details</a></li>
+      <li><a href="#value">Value</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
     <h2>Author</h2>
-    Damian W. Betebenner <a href='mailto:dbetebenner@nciea.org'>dbetebenner@nciea.org</a>, Adam Van Iwaarden <a href='mailto:avaniwaarden@gmail.com'>avaniwaarden@gmail.com</a>, Nathan Dadey <a href='mailto:ndadey@nciea.org'>ndadey@nciea.org</a> and Joseph Martineau <a href='mailto:jmartineau@nciea.org'>jmartineau@nciea.org</a>
+    Damian W. Betebenner <a href='mailto:dbetebenner@nciea.org'>dbetebenner@nciea.org</a> and Adam Van Iwaarden <a href='mailto:avaniwaarden@nciea.org'>avaniwaarden@nciea.org</a>
   </div>
 </div>
 

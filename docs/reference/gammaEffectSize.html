@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="https://centerforassessment.github.io/assets/favicon.png" sizes="16x16">
 
-<meta property="og:title" content="cfaTools • cfaTools: Tools for Large Scale Educational Assessment Analysis — cfaTools-package"/>
-<meta property="og:description" content="cfaTools • cfaTools: Tools for Large Scale Educational Assessment Analysis — cfaTools-package"/>
+<meta property="og:title" content="cfaTools • Calculate Gamma effect size proposed by Akinshin. — gammaEffectSize"/>
+<meta property="og:description" content="cfaTools • Calculate Gamma effect size proposed by Akinshin. — gammaEffectSize"/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://centerforassessment.github.io/cfaTools"/>
 <meta property="og:image" content="https://centerforassessment.github.io/assets/favicon.png"/>
@@ -17,10 +17,10 @@
 <meta name="twitter:site" content="@NCIEA1"/>
 <meta name="twitter:creator" content="@dbetebenner"/>
 <meta name="twitter:image" content="https://centerforassessment.github.io/assets/favicon.png"/>
-<meta name="twitter:title" content="cfaTools • cfaTools: Tools for Large Scale Educational Assessment Analysis — cfaTools-package"/>
-<meta name="twitter:description" content="cfaTools • cfaTools: Tools for Large Scale Educational Assessment Analysis — cfaTools-package"/>
+<meta name="twitter:title" content="cfaTools • Calculate Gamma effect size proposed by Akinshin. — gammaEffectSize"/>
+<meta name="twitter:description" content="cfaTools • Calculate Gamma effect size proposed by Akinshin. — gammaEffectSize"/>
 
-<title>cfaTools • cfaTools: Tools for Large Scale Educational Assessment Analysis — cfaTools-package</title>
+<title>cfaTools • Calculate Gamma effect size proposed by Akinshin. — gammaEffectSize</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -138,44 +138,65 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>cfaTools: Tools for Large Scale Educational Assessment Analysis</h1>
+    <h1>Calculate Gamma effect size proposed by Akinshin.</h1>
     </div>
 
-    <p>Center for Assessment developed Tools for Large Scale Educational Assessment.</p>
+    <p>Function for calculating non-parametric effect size for any specified quantile(s).</p>
 
+    <pre class="usage"><span class='fu'>gammaEffectSize</span>(
+        <span class='no'>x</span>,
+        <span class='no'>y</span>,
+        <span class='no'>prob</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x</th>
+      <td><p>Numeric vector of values from the comparison group (e.g., scale scores from grade 3 math for year 1).</p></td>
+    </tr>
+    <tr>
+      <th>y</th>
+      <td><p>Numeric vector of values from the group of interest (e.g., scale scores from grade 3 math for year 2).</p></td>
+    </tr>
+    <tr>
+      <th>prob</th>
+      <td><p>Argument to specify quantile(s) to evaluate (between 0 and 1).</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <table><tr><td>
-Package: </td>
-</tr><tr><td> cfaTools</td>
-</tr><tr><td>
-Type: </td>
-</tr><tr><td> Package</td>
-</tr><tr><td>
-Version: </td>
-</tr><tr><td> 0.0-1.2</td>
-</tr><tr><td>
-Date: </td>
-</tr><tr><td> 2021-6-30</td>
-</tr><tr><td>
-License: </td>
-</tr><tr><td> GPL-3</td>
-</tr><tr><td>
-LazyLoad: </td>
-</tr><tr><td> yes</td>
-</tr></table>
+    <p>Typical use of the function is to submit scale score or SGP data from
+ which to calculate effect sizes (standardized differences in the two distributions
+ at the given quantiles). This function is taken directly from the Andrey Akinshin
+ blog from June 25, 2020 - <a href = 'https://aakinshin.net/posts/nonparametric-effect-size/'>https://aakinshin.net/posts/nonparametric-effect-size/</a>.</p>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>Function returns an effect size (numeric) vector of length <code>prob</code>.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>        <span class='fu'>not_run</span>({
+                <span class='co'>###  require(SGPdata)</span>
+                <span class='co'>###  require(data.table)</span>
+                <span class='fu'>gammaEffectSize</span>(
+                        <span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'>na.omit</span>(<span class='no'>sgpData_LONG_COVID</span>[<span class='no'>YEAR</span><span class='kw'>==</span><span class='st'>"2019"</span> <span class='kw'>&amp;</span> <span class='no'>CONTENT_AREA</span><span class='kw'>==</span><span class='st'>"ELA"</span> <span class='kw'>&amp;</span> <span class='no'>GRADE</span><span class='kw'>==</span><span class='st'>"3"</span>, <span class='no'>SCALE_SCORE</span>]),
+                        <span class='kw'>y</span> <span class='kw'>=</span> <span class='fu'>na.omit</span>(<span class='no'>sgpData_LONG_COVID</span>[<span class='no'>YEAR</span><span class='kw'>==</span><span class='st'>"2021"</span> <span class='kw'>&amp;</span> <span class='no'>CONTENT_AREA</span><span class='kw'>==</span><span class='st'>"ELA"</span> <span class='kw'>&amp;</span> <span class='no'>GRADE</span><span class='kw'>==</span><span class='st'>"3"</span>, <span class='no'>SCALE_SCORE</span>]),
+                                <span class='kw'>prob</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>9</span>/<span class='fl'>10</span>)
+
+})</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       <li><a href="#details">Details</a></li>
+      <li><a href="#value">Value</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
     <h2>Author</h2>
-    Damian W. Betebenner <a href='mailto:dbetebenner@nciea.org'>dbetebenner@nciea.org</a>, Adam Van Iwaarden <a href='mailto:avaniwaarden@gmail.com'>avaniwaarden@gmail.com</a>, Nathan Dadey <a href='mailto:ndadey@nciea.org'>ndadey@nciea.org</a> and Joseph Martineau <a href='mailto:jmartineau@nciea.org'>jmartineau@nciea.org</a>
+    Andrey Akinshin, Damian W. Betebenner <a href='mailto:dbetebenner@nciea.org'>dbetebenner@nciea.org</a> and Adam Van Iwaarden <a href='mailto:avaniwaarden@nciea.org'>avaniwaarden@nciea.org</a>
   </div>
 </div>
 

@@ -106,7 +106,7 @@
 <!--/.navbar -->
 
       
-      </header><script src="Simulating_Missing_Data_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
+      </header><script src="Simulating_Missing_Data_files/header-attrs-2.9.1/header-attrs.js"></script><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
       <h1>Simulating Missing Data with amputeScaleScore</h1>
@@ -331,12 +331,12 @@ This makes sense for high % FRL schools, but not for high achieving students and
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">list</span>(<span class="at">NAs =</span> <span class="fu">round</span>(<span class="fu">sum</span>(<span class="fu">is.na</span>(SCALE_SCORE))<span class="sc">/</span>.N, <span class="dv">3</span>)),</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                      keyby<span class="ot">=</span><span class="fu">list</span>(CONTENT_AREA, GRADE)]</span></code></pre></div>
 <pre><code>##    CONTENT_AREA GRADE   NAs
-## 1:          ELA     3 0.301
-## 2:          ELA     4 0.301
-## 3:          ELA     5 0.304
-## 4:          ELA     6 0.306
-## 5:          ELA     7 0.299
-## 6:          ELA     8 0.300</code></pre>
+## 1:          ELA     3 0.303
+## 2:          ELA     4 0.300
+## 3:          ELA     5 0.302
+## 4:          ELA     6 0.307
+## 5:          ELA     7 0.304
+## 6:          ELA     8 0.306</code></pre>
 <p>Note that the observed missingness is near the intended (30%). The <code>mice::ampute.continuous</code> function does a decent job around 30% - 50% and worse the further away you get from there! Corrections for this have been implemented, but it’s still a bit off. Depending on the desired precision, users will need to experiment with <code>ampute.args$prop</code> argument values. The maximum proportion missing is currently around 85%. Hopefully that extreme enough…</p>
 </div>
 <div id="a-more-detailed-amputation" class="section level3">

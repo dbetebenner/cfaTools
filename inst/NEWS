@@ -1,3 +1,7 @@
+# cfaTools 0.0-1.2
+
+* Add functions to calculate Akinshin's Gamma effect size.
+
 # cfaTools 0.0-1.1
 
 * Update scale score imputation functions after first real world use.

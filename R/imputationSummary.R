@@ -17,7 +17,7 @@
   }
 
   ###   Avoid "Undefined global functions or variables:" from R CMD check
-  SCALE_SCORE_OBSERVED <- SGP_BASELINE_OBSERVED <- SGP_OBSERVED <-
+  SCALE_SCORE_OBSERVED <- SGP_BASELINE_OBSERVED <- SGP_OBSERVED <- SS_OBS_ORIG_SCALE <-
   Mean_SS_Observed <- Mean_SGPB_Observed <- Mean_SGP_Observed <-
   Mean_SS_Imputed <- Mean_SGP_Imputed <- Mean_SGPB_Imputed <- N <- IMP_N <- SGPB_ADF <-
   SGPB_B <- SGPB_CI_high <- SGPB_CI_high_simp <- SGPB_CI_low <- SGPB_CI_low_simp <-

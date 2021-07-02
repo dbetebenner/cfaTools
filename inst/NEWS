@@ -1,6 +1,6 @@
-# cfaTools 0.0-1.2
+# cfaTools 0.0-1.3
 
-* Add functions to calculate Akinshin's Gamma effect size.
+* Add functions to calculate Akinshin's Gamma effect size, including small N size correction for MAD.
 
 # cfaTools 0.0-1.1
 

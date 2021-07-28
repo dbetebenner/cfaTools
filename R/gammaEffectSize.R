@@ -1,7 +1,7 @@
 ##    Akinshin's Gamma  --  https://aakinshin.net/posts/nonparametric-effect-size/
 
 `gammaEffectSize` <- function(x, y, prob) {
-  as.numeric((Hmisc::hdquantile(y, prob) - Hmisc::hdquantile(x, prob)) / phdmad(x, y))
+  as.numeric((hd_qe(y, q = prob) - hd_qe(x, q = prob)) / phdmad(x, y))
 }
 
 ###   Function to apply gammaEffectSize to longitudinal data (e.g. from the SGP package)
@@ -14,11 +14,57 @@
   digits=3) {
 
     YEAR <- NULL
-    x <- na.omit(data_table[YEAR==year_1, get(variable)])
-    y <- na.omit(data_table[YEAR==year_2, get(variable)])
+    x <- na.omit(data_table[YEAR == year_1, get(variable)])
+    y <- na.omit(data_table[YEAR %in% year_2, get(variable)])
     gma <- round(gammaEffectSize(x, y, prob = quantiles), digits)
     names(gma) <- paste0("Q_", quantiles*100)
     gma
+}
+
+###   Harell-Davis (trimmed) quantile estimator
+`hd_qe` <- function(
+  x, q=0.5,
+  na.rm=TRUE,
+  trim=0.01) {
+    if(na.rm) x <- na.omit(x)
+    x <- sort(x, na.last = TRUE)
+    n <- length(x)
+
+    if (n < 2) return(rep(as.numeric(NA), length(q)))
+    if (n < 8) trim <- 0L
+
+    .hd <- function(x, prob) {
+      m1 <- (n + 1) * prob
+      m2 <- (n + 1) * (1 - prob)
+      vec <- seq(along = x)
+      w <- pbeta(vec/n, m1, m2) - pbeta((vec - 1)/n, m1, m2)  # weights
+      if (trim != 0) {
+        # if (n %% 2 == 0L) {
+        #   tmp.index <- head(tail(seq(n), -(max(1, floor(n*trim)))), -ceiling(n*trim))
+        #   hde <- sum(w[tmp.index] * x[tmp.index]) * 1/sum(w[tmp.index])
+        # } else {
+        #   tmp.index1 <- head(tail(seq(n), -ceiling(n*trim)), -(max(1, floor(n*trim))))
+        #   tmp.index2 <- head(tail(seq(n), -(max(1, floor(n*trim)))), -ceiling(n*trim))
+        #   hde <- mean(c((sum(w[tmp.index1] * x[tmp.index1]) * 1/sum(w[tmp.index1])),
+        #                 (sum(w[tmp.index2] * x[tmp.index2]) * 1/sum(w[tmp.index2]))))
+        # }
+
+        ##  More in line with Akinshin - https://aakinshin.net/posts/winsorized-hdqe/
+        hdi.x <- HDInterval::hdi(x, credMass = 1-trim)
+        ##  Deal with ties - only take some if tied (not outliers!)
+        if (all(diff(x[x <= hdi.x[[1]]])==0)) {
+          low.tail.index <- 1:floor(n*0.005)
+        } else low.tail.index <- which(x <= hdi.x[[1]])
+        if (all(diff(x[x >= hdi.x[[2]]])==0)) {
+          up.tail.index <- (n-floor(n*0.005)):n
+        } else up.tail.index <- which(x >= hdi.x[[2]])
+
+        tmp.index <- seq(n)[-c(low.tail.index, up.tail.index)]
+        # tmp.index <- which(x > hdi.x[[1]] & x < hdi.x[[2]])  ##  This doesn't work well with ties...
+        hde <- sum(w[tmp.index] * x[tmp.index]) * 1/sum(w[tmp.index])
+      } else hde <- sum(w * x) # weighted sum
+    }
+    as.numeric(unlist(lapply(q, function(f) .hd(x, prob = f))))
 }
 
 ###   Utility Functions
@@ -28,13 +74,14 @@ pooled <- function(x, y, FUN) {
   sqrt(((nx - 1) * FUN(x) ^ 2 + (ny - 1) * FUN(y) ^ 2) / (nx + ny - 2))
 }
 
-hdmedian <- function(x) as.numeric(Hmisc::hdquantile(x, 0.5))
+# hdmedian <- function(x) as.numeric(hdquantile(x, 0.5)) # hdquantile from `Hmisc`
+
 hdmad <- function(x, small_n_correction = TRUE) {
   if (small_n_correction) {
     N <- length(x)
     if (N > 19999) CC <- 1.4826 else CC <- consistency_constant(N)
   } else CC <- 1.4826
-  CC * hdmedian(abs(x - hdmedian(x)))
+  CC * hd_qe(abs(x - hd_qe(x)))
 }
 phdmad <- function(x, y) pooled(x, y, hdmad)
 

@@ -1,7 +1,8 @@
 \name{bootstrapSRS_SGP}
 \alias{bootstrapSRS_SGP}
 \title{Higher level function for using bootstrap_SRS with SGP objects}
-\description{Function for calculating bootstrap summary statistics using data and pre-designated strata proportions with SGP objects.
+\description{Function for calculating bootstrap summary statistics using data
+and pre-designated strata proportions with SGP objects.
 }
 \usage{
 bootstrapSRS_SGP(
@@ -44,10 +45,14 @@ bootstrapSRS_SGP(
 }
 
 
-\details{Function calculates a summary statistic of existing data (e.g., mean) by re-sampling based upon designated strata proportions
+\details{Function calculates a summary statistic of existing data (e.g., mean) by
+re-sampling based upon designated strata proportions
 }
 
-\value{Function returns either a list (default) containing the summary statistic (e.g., mean) and standard deviation (i.e., standard error) for the bootstrap sample of that statistic or funtion returns a vector containing the bootstrap replication values.
+\value{Function returns either a list (default) containing the summary statistic
+(e.g., mean) and standard deviation (i.e., standard error) for the bootstrap
+sample of that statistic or funtion returns a vector containing the bootstrap
+replication values.
 }
 
 \author{Damian W. Betebenner \email{dbetebenner@nciea.org} }
@@ -55,7 +60,8 @@ bootstrapSRS_SGP(
 \examples{
 ### bootstrapSRS_SGP needs an object of class SGP run.
 ### See the Step 6 comparisons in the Demonstration Learning Loss Analytics for examples
-### https://github.com/CenterForAssessment/SGP_Research/tree/master/Demonstration/Learning_Loss_Analysis/Step_6_Summary_Comparisons 
+### https://github.com/CenterForAssessment/SGP_Research/tree/master/Demonstration/
+### Learning_Loss_Analysis/Step_6_Summary_Comparisons 
 }
 
 \keyword{ misc }

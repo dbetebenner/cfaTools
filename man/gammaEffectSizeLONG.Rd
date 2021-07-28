@@ -20,7 +20,7 @@ gammaEffectSizeLong(
   }
   \item{variable}{Character (length 1) identifying the variable of interest (e.g., \sQuote{SCALE_SCORE}).
   }
-	\item{year_1}{Character (length 1) identifying the comparison/control year.
+	\item{year_1}{Character identifying the comparison/control year(s). Can be multiple years.
 	Variable assumed to be named \sQuote{YEAR}.
 	}
 	\item{year_2}{Character (length 1) identifying the year of interest (treatment).

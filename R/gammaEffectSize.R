@@ -14,7 +14,7 @@
   digits=3) {
 
     YEAR <- NULL
-    x <- na.omit(data_table[YEAR == year_1, get(variable)])
+    x <- na.omit(data_table[YEAR %in% year_1, get(variable)])
     y <- na.omit(data_table[YEAR %in% year_2, get(variable)])
     gma <- round(gammaEffectSize(x, y, prob = quantiles), digits)
     names(gma) <- paste0("Q_", quantiles*100)

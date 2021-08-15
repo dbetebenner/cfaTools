@@ -13,7 +13,7 @@ Center for Assessment developed Tools for Large Scale Educational Assessment.
 Package: \tab cfaTools\cr
 Type: \tab Package\cr
 Version: \tab 0.0-1.3\cr
-Date: \tab 2021-7-2\cr
+Date: \tab 2021-8-13\cr
 License: \tab GPL-3\cr
 LazyLoad: \tab yes\cr
 }

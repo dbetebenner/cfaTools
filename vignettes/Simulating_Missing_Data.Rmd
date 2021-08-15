@@ -38,7 +38,7 @@ analysis using the [SGP package](https://github.com/CenterForAssessment/SGP).
 The following provides an explanation of the arguments a user can provide in the
 `amputeScaleScore` function.
 
-```{r argumentz}
+```{r arguments}
   require(cfaTools)
   args(amputeScaleScore)
 ```
@@ -113,7 +113,7 @@ The following provides an explanation of the arguments a user can provide in the
 
 * `reverse.weight = "SCALE_SCORE"`
   - The current default for `ampute.args$type` is `"RIGHT"`, which means that
-    students with high weighted scores have the highest probability for amputation.  
+    students with high weighted scores have the highest probability for amputation.
     This makes sense for high % FRL schools, but not for high achieving students
     and/or students in high achieving schools. This function inverses the variable(s)
     individual (and institutional mean) value(s) so that higher weight is given

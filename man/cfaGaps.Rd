@@ -45,8 +45,13 @@ cfaGaps(
 
 \examples{
 	\dontrun{
-		cfaGaps(gap_data=sgpData_LONG[YEAR=="2018_2019", c("SCALE_SCORE", "ETHNICITY"), with=FALSE],
-						gap_groups=c("African American", "White"))
+		cfaGaps(
+			gap_data=sgpData_LONG[
+									YEAR=="2018_2019",
+										c("SCALE_SCORE",
+										  "ETHNICITY"),
+									with=FALSE],
+			gap_groups=c("African American", "White"))
 	}
 }
 

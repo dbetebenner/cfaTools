@@ -36,8 +36,14 @@ gammaEffectSize(
 		###  require(SGPdata)
 		###  require(data.table)
 		gammaEffectSize(
-  			x = na.omit(sgpData_LONG_COVID[YEAR=="2019" & CONTENT_AREA=="ELA" & GRADE=="3", SCALE_SCORE]),
-  			y = na.omit(sgpData_LONG_COVID[YEAR=="2021" & CONTENT_AREA=="ELA" & GRADE=="3", SCALE_SCORE]),
+  			x = na.omit(sgpData_LONG_COVID[
+					YEAR=="2019" &
+					CONTENT_AREA=="ELA" &
+					GRADE=="3", SCALE_SCORE]),
+  			y = na.omit(sgpData_LONG_COVID[
+					YEAR=="2021" &
+					CONTENT_AREA=="ELA" &
+					GRADE=="3", SCALE_SCORE]),
 				prob = 1:9/10)
 	}
 }

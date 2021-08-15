@@ -20,10 +20,10 @@ gammaEffectSizeLong(
   }
   \item{variable}{Character (length 1) identifying the variable of interest (e.g., \sQuote{SCALE_SCORE}).
   }
-	\item{year_1}{Character (length 1) identifying the comparison/control year.
+	\item{year_1}{Character identifying the comparison/control year(s). Can be multiple years.
 	Variable assumed to be named \sQuote{YEAR}.
 	}
-	\item{year_2}{Character (length 1) identifying the year of interest (treatment).
+	\item{year_2}{Character identifying the year(s) of interest (treatment). Can be multiple years.
 	Variable assumed to be named \sQuote{YEAR}.
 	}
   \item{quantiles}{Argument to specify quantile(s) to evaluate (between 0 and 1). Default is Deciles.

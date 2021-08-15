@@ -87,8 +87,8 @@ amputeScaleScore(
   is given to lower scores/means. This argument is ignored when `ampute.vars = NULL`.
   }
   \item{ampute.args}{Variables to be used in the mice:ampute.continuous function.
-  Currenly only `prop` and `type` can be modified. See ? mice::ampute.continuous
-  and?mice::ampute for more information. The `prop` piece is inexact and has required
+  Currenly only `prop` and `type` can be modified. See ?mice::ampute.continuous
+  and ?mice::ampute for more information. The `prop` piece is inexact and has required
   some modification on my part. Its still imprecise, particularly for values away
   from 0.5 (50% missing). Also, the max missingness is 85%, and for that you need
   to set prop=0.95 or greater. Note that the prop gives a total proportion missing,

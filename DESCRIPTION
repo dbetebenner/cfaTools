@@ -1,6 +1,6 @@
 Package: cfaTools
-Version: 0.0-1.4
-Date: 2021-7-28
+Version: 0.0-1.5
+Date: 2021-8-13
 Title: Center for Assessment Tools for Large Scale Educational Assessment Analysis
 Description: Center for Assessment developed Tools for Large Scale Educational Assessment.
 Authors@R: c(person(given=c("Damian", "W."), family="Betebenner", email="dbetebenner@nciea.org", role=c("aut", "cre")),
@@ -10,7 +10,7 @@ Authors@R: c(person(given=c("Damian", "W."), family="Betebenner", email="dbetebe
 Maintainer: Damian W. Betebenner <dbetebenner@nciea.org>
 Depends: R (>= 4.0)
 Suggests: SGPdata (>= 24.0-0), knitr, rmarkdown
-Imports: abind, crayon, data.table (>= 1.14.0), dplyr, grid, HDInterval, mice, miceadds, parallel, testthat, tidyr, tidyselect, toOrdinal, VIM
+Imports: abind, crayon, data.table (>= 1.14.0), dplyr, grid, HDInterval, Hmisc, MASS, mice, miceadds, parallel, SGP, testthat, tidyr, tidyselect, toOrdinal, VIM
 URL: https://CenterForAssessment.github.io/cfaTools/, https://github.com/CenterForAssessment/cfaTools, https://cran.r-project.org/package=cfaTools
 BugReports: https://github.com/CenterForAssessment/cfaTools/issues
 VignetteBuilder: knitr

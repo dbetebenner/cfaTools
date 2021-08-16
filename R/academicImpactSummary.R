@@ -368,5 +368,5 @@ school.aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS_ADJ := fcase(
                     GES_MEDIAN_SSS_ADJUSTED < -0.5 & GES_MEDIAN_SSS_ADJUSTED >= -0.8, "Large",
                     GES_MEDIAN_SSS_ADJUSTED < -0.8, "Severe")]
 
-    return(school.aggregates)
+    return(list(SCHOOL_SUMMARIES=school.aggregates))
 } ### END academicImpactSummary

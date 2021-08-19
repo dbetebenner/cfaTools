@@ -4,7 +4,8 @@
     current_year=NULL,
     prior_year=NULL,
     content_areas=NULL,
-    grades=NULL) {
+    grades=NULL,
+    aggregation_group="SCHOOL_NUMBER") {
 
     ACHIEVEMENT_LEVEL <- ACHIEVEMENT_LEVEL_PRIOR_2YEAR <- CONTENT_AREA <- COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP <- NULL
     COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ <- COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS <- COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS_ADJ <- NULL
@@ -13,16 +14,16 @@
     MEAN_SCALE_SCORE_STANDARDIZED <- MEDIAN_SGP <- MEDIAN_SGP_BASELINE <- MEDIAN_SGP_BASELINE_PRIOR <- MEDIAN_SGP_PRIOR_2YEAR <- NULL
     MEDIAN_SGP_PRIOR_3YEAR <- MSGP_BASELINE_DIFFERENCE_ADJUSTED <- MSGP_BASELINE_DIFFERENCE_UNCORRECTED <- MSSS_DIFFERENCE_ADJUSTED <- NULL
     MSSS_DIFFERENCE_UNCORRECTED <- PRIOR_MSGP_CENTERED_2YEAR <- PRIOR_MSGP_CENTERED_3YEAR <- PRIOR_MSSS_CENTERED_2YEAR <- SCALE_SCORE <- NULL
-    SCALE_SCORE_PRIOR_STANDARDIZED <- SCALE_SCORE_PRIOR_STANDARDIZED_2YEAR <- SCALE_SCORE_STANDARDIZED <- SCHOOL_NUMBER <- SGP <- SGP_BASELINE <- VALID_CASE <- YEAR <- NULL
+    SCALE_SCORE_PRIOR_STANDARDIZED <- SCALE_SCORE_PRIOR_STANDARDIZED_2YEAR <- SCALE_SCORE_STANDARDIZED <- SGP <- SGP_BASELINE <- VALID_CASE <- YEAR <- NULL
 
     ### Create state (if NULL) from sgp_object (if possible)
 	if (is.null(state)) {
-		tmp.name <- toupper(gsub("_", " ", deparse(substitute(sgp_object))))
+		tmp.name <- toupper(gsub("_", " ", deparse(substitute(sgp_data))))
 		state <- SGP::getStateAbbreviation(tmp.name)
 	}
 
     ### Create sgp_data data set
-    if (SGP::is.SGP(sgp_data)) sgp_data <- copy(sgp_data@Data)
+    if (SGP::is.SGP(sgp_data)) sgp_data <- sgp_data@Data
     if (!"data.table" %in% class(sgp_data)) stop("Please Provide either and SGP object or LONG data")
     setkey(sgp_data, VALID_CASE, CONTENT_AREA, YEAR, ID)
 
@@ -37,6 +38,14 @@
         100*sum(tmp.table[proficient.achievement.levels])/sum(tmp.table)
     }
 
+    Z <- function(data_table, var.to.standardize, reference.year = NULL, rm.na = TRUE) {
+      YEAR <- NULL
+      x <- data_table[, get(var.to.standardize)]
+      if (!is.null(reference.year)){
+        y <- data_table[YEAR==reference.year, get(var.to.standardize)]
+      } else y <- x
+      (x - mean(y, na.rm = rm.na)) / sd(y, na.rm = rm.na)
+    }
 
     ### Calculate parameters from data if not provided
     if (is.null(current_year)) current_year <- tail(sort(unique(sgp_data[['YEAR']])), 1)
@@ -45,7 +54,9 @@
     if (is.null(grades)) grades <- unique(sgp_data[['GRADE']])
 
     ### Create additional variables necessary for aggregates
-    if (!"SCALE_SCORE_STANDARDIZED" %in% names(sgp_data)) sgp_data[,SCALE_SCORE_STANDARDIZED:=as.numeric(scale(SCALE_SCORE)), keyby=c("CONTENT_AREA", "YEAR", "GRADE")]
+    if (!"SCALE_SCORE_STANDARDIZED" %in% names(sgp_data)) {
+        sgp_data[, SCALE_SCORE_STANDARDIZED := Z(.SD, "SCALE_SCORE", reference.year = "2019"), by = list(CONTENT_AREA, GRADE), .SDcols = c("YEAR", "CONTENT_AREA", "GRADE", "SCALE_SCORE")]
+    }
     shift.key <- c("ID", "CONTENT_AREA", "YEAR")
     setkeyv(sgp_data, shift.key)
     sgp_data[, c("SCALE_SCORE_PRIOR_STANDARDIZED_2YEAR", "ACHIEVEMENT_LEVEL_PRIOR_2YEAR") := shift(list(SCALE_SCORE_STANDARDIZED, ACHIEVEMENT_LEVEL), 2), by = list(ID, CONTENT_AREA)]
@@ -62,13 +73,13 @@
                             PERCENT_PROFICIENT=percent_proficient(ACHIEVEMENT_LEVEL),
                             PERCENT_PROFICIENT_PRIOR=percent_proficient(ACHIEVEMENT_LEVEL_PRIOR_2YEAR),
                             COUNT_SGP=sum(!is.na(SGP_BASELINE))),
-                          keyby=c("YEAR", "SCHOOL_NUMBER", "CONTENT_AREA")]
+                          keyby=c("YEAR", aggregation_group, "CONTENT_AREA")]
 
-    shift.key <- c("SCHOOL_NUMBER", "CONTENT_AREA", "YEAR")
+    shift.key <- c(aggregation_group, "CONTENT_AREA", "YEAR")
     setkeyv(school.aggregates, shift.key)
 
-    school.aggregates[, c("MEDIAN_SGP_PRIOR_2YEAR", "MEDIAN_SGP_PRIOR_3YEAR") := shift(MEDIAN_SGP, 2:3), by = list(SCHOOL_NUMBER, CONTENT_AREA)]
-    school.aggregates[, MEDIAN_SGP_BASELINE_PRIOR := shift(MEDIAN_SGP_BASELINE, 1), by = list(SCHOOL_NUMBER, CONTENT_AREA)] # Only getting this for 2021 (1 year shift = 2 years)
+    school.aggregates[, c("MEDIAN_SGP_PRIOR_2YEAR", "MEDIAN_SGP_PRIOR_3YEAR") := shift(MEDIAN_SGP, 2:3), by = c(eval(aggregation_group), "CONTENT_AREA")]
+    school.aggregates[, MEDIAN_SGP_BASELINE_PRIOR := shift(MEDIAN_SGP_BASELINE, 1), by = c(eval(aggregation_group), "CONTENT_AREA")] # Only getting this for 2021 (1 year shift = 2 years)
 
 # table(school.aggregates[, YEAR, is.na(MEDIAN_SGP_PRIOR_2YEAR)])
 # table(school.aggregates[, YEAR, is.na(MEDIAN_SGP_PRIOR_3YEAR)])
@@ -156,14 +167,14 @@ school.aggregates[, COVID_ACADEMIC_IMPACT_SGP_DIFF_ADJ := fcase(
 ges_sgp <- rbindlist(list(
     sgp_data[,
         as.list(gammaEffectSizeLong(.SD, "SGP", SGP:::yearIncrement(prior_year, -2), prior_year, quantiles=c(0.5), digits=2)),
-      keyby=c("CONTENT_AREA", "SCHOOL_NUMBER")][, YEAR := prior_year],
+      keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := prior_year],
     sgp_data[,
         as.list(gammaEffectSizeLong(.SD, "SGP_BASELINE", prior_year, current_year, quantiles=c(0.5), digits=2)),
-      keyby=c("CONTENT_AREA", "SCHOOL_NUMBER")][, YEAR := current_year]))
+      keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]))
 
 setnames(ges_sgp, "Q_50", "GES_MEDIAN_SGP")
-setkey(ges_sgp, SCHOOL_NUMBER, YEAR, CONTENT_AREA)
-setkey(school.aggregates, SCHOOL_NUMBER, YEAR, CONTENT_AREA)
+setkeyv(ges_sgp, c(aggregation_group, "YEAR", "CONTENT_AREA"))
+setkeyv(school.aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
 
 ##    Merge in GES with other summary statistics
 school.aggregates <- ges_sgp[school.aggregates]
@@ -231,10 +242,11 @@ school.aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ := fcase(
 # table(school.aggregates[YEAR==prior_year, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ, CONTENT_AREA], exclude=NULL)
 # table(school.aggregates[YEAR=='2021', COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ, CONTENT_AREA], exclude=NULL)
 
-
+####################################################################################
 #####
 ###   MEAN_SCALE_SCORE_STANDARDIZED
 #####
+####################################################################################
 
 school.aggregates[, PRIOR_MSSS_CENTERED_2YEAR := MEAN_SCALE_SCORE_PRIOR_STANDARDIZED - mean(MEAN_SCALE_SCORE_PRIOR_STANDARDIZED, na.rm=TRUE), by = list(YEAR, CONTENT_AREA)]
 # school.aggregates[, as.list(summary(PRIOR_MSSS_CENTERED_2YEAR)), keyby = list(YEAR, CONTENT_AREA)]
@@ -282,14 +294,14 @@ for (CA in content_areas) {
 ges_sss <- rbindlist(list(
     sgp_data[,
         as.list(gammaEffectSizeLong(.SD, "SCALE_SCORE_STANDARDIZED", SGP:::yearIncrement(prior_year, -2), prior_year, quantiles=c(0.5), digits=2)),
-      keyby=c("CONTENT_AREA", "SCHOOL_NUMBER")][, YEAR := prior_year],
+      keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := prior_year],
     sgp_data[,
         as.list(gammaEffectSizeLong(.SD, "SCALE_SCORE_STANDARDIZED", prior_year, current_year, quantiles=c(0.5), digits=2)),
-      keyby=c("CONTENT_AREA", "SCHOOL_NUMBER")][, YEAR := current_year]))
+      keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]))
 
 setnames(ges_sss, "Q_50", "GES_MEDIAN_SSS")
-setkey(ges_sss, SCHOOL_NUMBER, YEAR, CONTENT_AREA)
-setkey(school.aggregates, SCHOOL_NUMBER, YEAR, CONTENT_AREA)
+setkeyv(ges_sss, c(aggregation_group, "YEAR", "CONTENT_AREA"))
+setkeyv(school.aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
 
 ##    Merge in GES with other summary statistics
 school.aggregates <- ges_sss[school.aggregates]
@@ -347,11 +359,11 @@ school.aggregates[, COVID_ACADEMIC_IMPACT_SSS_DIFF := fcase(
                     MSSS_DIFFERENCE_UNCORRECTED < -25, "Severe")]
 
 school.aggregates[, COVID_ACADEMIC_IMPACT_SSS_DIFF_ADJ := fcase(
-                    MSGP_BASELINE_DIFFERENCE_ADJUSTED >= 5, "Improvement",
-                    MSGP_BASELINE_DIFFERENCE_ADJUSTED < 5 & MSGP_BASELINE_DIFFERENCE_ADJUSTED >= -5, "Modest to None",
-                    MSGP_BASELINE_DIFFERENCE_ADJUSTED < -5 & MSGP_BASELINE_DIFFERENCE_ADJUSTED >= -15, "Moderate",
-                    MSGP_BASELINE_DIFFERENCE_ADJUSTED < -15 & MSGP_BASELINE_DIFFERENCE_ADJUSTED >= -25, "Large",
-                    MSGP_BASELINE_DIFFERENCE_ADJUSTED < -25, "Severe")]
+                    MSSS_DIFFERENCE_ADJUSTED >= 5, "Improvement",
+                    MSSS_DIFFERENCE_ADJUSTED < 5 & MSSS_DIFFERENCE_ADJUSTED >= -5, "Modest to None",
+                    MSSS_DIFFERENCE_ADJUSTED < -5 & MSSS_DIFFERENCE_ADJUSTED >= -15, "Moderate",
+                    MSSS_DIFFERENCE_ADJUSTED < -15 & MSSS_DIFFERENCE_ADJUSTED >= -25, "Large",
+                    MSSS_DIFFERENCE_ADJUSTED < -25, "Severe")]
 
 ##    Create COVID Impact Levels for G.E.S. for 2021 - 2019 Median SGP differences
 school.aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS := fcase(
@@ -368,5 +380,7 @@ school.aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS_ADJ := fcase(
                     GES_MEDIAN_SSS_ADJUSTED < -0.5 & GES_MEDIAN_SSS_ADJUSTED >= -0.8, "Large",
                     GES_MEDIAN_SSS_ADJUSTED < -0.8, "Severe")]
 
-    return(list(SCHOOL_SUMMARIES=school.aggregates))
+    tmp.list <- list(TEMP=school.aggregates)
+    names(tmp.list) <- paste(aggregation_group, collapse="_by_")
+    return(tmp.list)
 } ### END academicImpactSummary

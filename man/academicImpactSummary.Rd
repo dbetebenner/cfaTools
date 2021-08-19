@@ -10,7 +10,8 @@ academicImpactSummary(
 	current_year=NULL,
 	prior_year=NULL,
 	content_areas=NULL,
-	grades=NULL)
+	grades=NULL,
+	aggregation_group="SCHOOL_NUMBER")
 }
 
 \arguments{
@@ -25,6 +26,8 @@ academicImpactSummary(
   \item{content_areas}{Content areas for which to calculate academic impact.
   }
   \item{grades}{Grades within the designated content areas to calculate academic impact.
+  }
+  \item{aggregation_group}{Character string indicating groups to aggregate by and create impact summaries for.
   }
 }
 

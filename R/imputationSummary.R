@@ -39,7 +39,7 @@
 
   if (!is.null(standardize.scores)) {
     data.to.summarize[, SS_OBS_ORIG_SCALE := SCALE_SCORE_OBSERVED]
-    data.to.summarize[, SCALE_SCORE_OBSERVED := Z(SCALE_SCORE_OBSERVED), by = list(get(standardize.scores))]
+    data.to.summarize[, SCALE_SCORE_OBSERVED := Z(SCALE_SCORE_OBSERVED), by = standardize.scores] # list(get(standardize.scores))
   }
 
   smry_obs <- data.to.summarize[, list(
@@ -59,7 +59,7 @@
     sgpb.imp <- paste0("SGP_BASELINE_IMPUTED_", IMP)
 
     if (!is.null(standardize.scores)) {
-      data.to.summarize[, eval(ss.imp) := Z(x = get(ss.imp), y = SS_OBS_ORIG_SCALE), by = list(get(standardize.scores))]
+      data.to.summarize[, eval(ss.imp) := Z(x = get(ss.imp), y = SS_OBS_ORIG_SCALE), by = standardize.scores]
     }
 
     tmp_imp_smry <- data.to.summarize[, list(

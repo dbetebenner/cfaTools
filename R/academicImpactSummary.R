@@ -87,14 +87,13 @@
     shift.key <- c(aggregation_group, "CONTENT_AREA", "YEAR")
     setkeyv(group_aggregates, shift.key)
 
-    # group_aggregates[, MEDIAN_SGP_PRIOR_2YEAR := shift(MEDIAN_SGP, 2), by = c(eval(aggregation_group), "CONTENT_AREA")]
     group_aggregates[, c("MEDIAN_SGP_PRIOR_1YEAR", "MEDIAN_SGP_PRIOR_2YEAR") := shift(MEDIAN_SGP, 1:2), by = c(eval(aggregation_group), "CONTENT_AREA")]
     # group_aggregates[, MEDIAN_SGP_BASELINE_PRIOR := shift(MEDIAN_SGP_BASELINE, 1), by = c(eval(aggregation_group), "CONTENT_AREA")] # Only getting this for 2021 (1 year shift = 2 years)
     group_aggregates[, c("MEAN_SCALE_SCORE_PRIOR_STANDARDIZED", "MEAN_SCALE_SCORE_PRIOR_2YEAR_STANDARDIZED") := shift(MEAN_SCALE_SCORE_STANDARDIZED, 1:2), by = c(eval(aggregation_group), "CONTENT_AREA")]
     group_aggregates[, c("PERCENT_PROFICIENT_PRIOR", "PERCENT_PROFICIENT_PRIOR_2YEAR") := shift(PERCENT_PROFICIENT, 1:2), by = c(eval(aggregation_group), "CONTENT_AREA")]
 
-# table(group_aggregates[, YEAR, is.na(MEDIAN_SGP_PRIOR_2YEAR)])
-# table(group_aggregates[, YEAR, is.na(MEDIAN_SGP_BASELINE_PRIOR)])
+    # table(group_aggregates[, YEAR, is.na(MEDIAN_SGP_PRIOR_2YEAR)])
+    # table(group_aggregates[, YEAR, is.na(MEDIAN_SGP_BASELINE_PRIOR)])
 
     if (year_gap!=1) {
       # group_aggregates[YEAR == current_year, MEDIAN_SGP_PRIOR_2YEAR := MEDIAN_SGP_BASELINE_PRIOR] # Using only BASELINE to BASELINE for 2021
@@ -121,288 +120,279 @@
     ###   Create uncorrected Baseline difference (2021 - 2019)
     group_aggregates[, MSGP_BASELINE_DIFFERENCE_UNCORRECTED := MEDIAN_SGP_BASELINE - MEDIAN_SGP_PRIOR_2YEAR]
 
-###   RTM Adjusted MSGP_BASELINE_DIFFERENCE
-msgp_rtm_models <- list()
-for (CA in content_areas) {
-  msgp_rtm_models[[CA]] <- MASS::rlm(MSGP_BASELINE_DIFFERENCE_UNCORRECTED ~ 0 + PRIOR_MSGP_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
-}
+    ###   RTM Adjusted MSGP_BASELINE_DIFFERENCE
+    msgp_rtm_models <- list()
+    for (CA in content_areas) {
+      msgp_rtm_models[[CA]] <- MASS::rlm(MSGP_BASELINE_DIFFERENCE_UNCORRECTED ~ 0 + PRIOR_MSGP_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+    }
 
-##    Model diagnostics
-# par(mfrow = c(2, 2))
-# for (CA in content_areas) {
-# hist(msgp_rtm_models[[CA]]$residuals, breaks=50)
-# qqnorm(msgp_rtm_models[[CA]]$residuals);qqline(msgp_rtm_models[[CA]]$residuals)
-# plot(na.omit(group_aggregates[YEAR == prior_year & CONTENT_AREA == CA & !is.na(PRIOR_MSGP_CENTERED_2YEAR), MSGP_BASELINE_DIFFERENCE_UNCORRECTED]), msgp_rtm_models[[CA]]$residuals)
-# plot(na.omit(group_aggregates[YEAR == prior_year & CONTENT_AREA == CA & !is.na(PRIOR_MSGP_CENTERED_2YEAR), MEDIAN_SGP_BASELINE]), msgp_rtm_models[[CA]]$fitted.values)
-# }
+    ##    Model diagnostics
+    # par(mfrow = c(2, 2))
+    # for (CA in content_areas) {
+    # hist(msgp_rtm_models[[CA]]$residuals, breaks=50)
+    # qqnorm(msgp_rtm_models[[CA]]$residuals);qqline(msgp_rtm_models[[CA]]$residuals)
+    # plot(na.omit(group_aggregates[YEAR == prior_year & CONTENT_AREA == CA & !is.na(PRIOR_MSGP_CENTERED_2YEAR), MSGP_BASELINE_DIFFERENCE_UNCORRECTED]), msgp_rtm_models[[CA]]$residuals)
+    # plot(na.omit(group_aggregates[YEAR == prior_year & CONTENT_AREA == CA & !is.na(PRIOR_MSGP_CENTERED_2YEAR), MEDIAN_SGP_BASELINE]), msgp_rtm_models[[CA]]$fitted.values)
+    # }
 
-##    Create Adjusted MSGP_BASELINE_DIFFERENCE by subtracting coefficient for PRIOR_MSGP_CENTERED_2YEAR
-group_aggregates[, MSGP_BASELINE_DIFFERENCE_ADJUSTED := as.numeric(NA)]
-for (CA in content_areas) {
-  group_aggregates[CONTENT_AREA == CA, MSGP_BASELINE_DIFFERENCE_ADJUSTED := MSGP_BASELINE_DIFFERENCE_UNCORRECTED - (PRIOR_MSGP_CENTERED_2YEAR*msgp_rtm_models[[CA]]$coef[["PRIOR_MSGP_CENTERED_2YEAR"]])]
-}
+    ##    Create Adjusted MSGP_BASELINE_DIFFERENCE by subtracting coefficient for PRIOR_MSGP_CENTERED_2YEAR
+    group_aggregates[, MSGP_BASELINE_DIFFERENCE_ADJUSTED := as.numeric(NA)]
+    for (CA in content_areas) {
+      group_aggregates[CONTENT_AREA == CA, MSGP_BASELINE_DIFFERENCE_ADJUSTED := MSGP_BASELINE_DIFFERENCE_UNCORRECTED - (PRIOR_MSGP_CENTERED_2YEAR*msgp_rtm_models[[CA]]$coef[["PRIOR_MSGP_CENTERED_2YEAR"]])]
+    }
 
-##    correlation checks
-# cor(group_aggregates[, MSGP_BASELINE_DIFFERENCE_UNCORRECTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[YEAR == prior_year, MSGP_BASELINE_DIFFERENCE_UNCORRECTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year, MSGP_BASELINE_DIFFERENCE_UNCORRECTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[, MSGP_BASELINE_DIFFERENCE_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[YEAR == prior_year, MSGP_BASELINE_DIFFERENCE_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year, MSGP_BASELINE_DIFFERENCE_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "ELA", MSGP_BASELINE_DIFFERENCE_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "MATHEMATICS", MSGP_BASELINE_DIFFERENCE_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    ##    correlation checks
+    # cor(group_aggregates[, MSGP_BASELINE_DIFFERENCE_UNCORRECTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[YEAR == prior_year, MSGP_BASELINE_DIFFERENCE_UNCORRECTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year, MSGP_BASELINE_DIFFERENCE_UNCORRECTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[, MSGP_BASELINE_DIFFERENCE_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[YEAR == prior_year, MSGP_BASELINE_DIFFERENCE_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year, MSGP_BASELINE_DIFFERENCE_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "ELA", MSGP_BASELINE_DIFFERENCE_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "MATHEMATICS", MSGP_BASELINE_DIFFERENCE_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
 
-##    Create COVID Impact Levels for MSGP Baseline Differences
-group_aggregates[, COVID_ACADEMIC_IMPACT_SGP_DIFF := fcase(
-                    MSGP_BASELINE_DIFFERENCE_UNCORRECTED >= 5, "Improvement",
-                    MSGP_BASELINE_DIFFERENCE_UNCORRECTED < 5 & MSGP_BASELINE_DIFFERENCE_UNCORRECTED >= -5, "Modest to None",
-                    MSGP_BASELINE_DIFFERENCE_UNCORRECTED < -5 & MSGP_BASELINE_DIFFERENCE_UNCORRECTED >= -15, "Moderate",
-                    MSGP_BASELINE_DIFFERENCE_UNCORRECTED < -15 & MSGP_BASELINE_DIFFERENCE_UNCORRECTED >= -25, "Large",
-                    MSGP_BASELINE_DIFFERENCE_UNCORRECTED < -25, "Severe")]
+    ##    Create COVID Impact Levels for MSGP Baseline Differences
+    group_aggregates[, COVID_ACADEMIC_IMPACT_SGP_DIFF := fcase(
+                        MSGP_BASELINE_DIFFERENCE_UNCORRECTED >= 5, "Improvement",
+                        MSGP_BASELINE_DIFFERENCE_UNCORRECTED < 5 & MSGP_BASELINE_DIFFERENCE_UNCORRECTED >= -5, "Modest to None",
+                        MSGP_BASELINE_DIFFERENCE_UNCORRECTED < -5 & MSGP_BASELINE_DIFFERENCE_UNCORRECTED >= -15, "Moderate",
+                        MSGP_BASELINE_DIFFERENCE_UNCORRECTED < -15 & MSGP_BASELINE_DIFFERENCE_UNCORRECTED >= -25, "Large",
+                        MSGP_BASELINE_DIFFERENCE_UNCORRECTED < -25, "Severe")]
 
-group_aggregates[, COVID_ACADEMIC_IMPACT_SGP_DIFF_ADJ := fcase(
-                    MSGP_BASELINE_DIFFERENCE_ADJUSTED >= 5, "Improvement",
-                    MSGP_BASELINE_DIFFERENCE_ADJUSTED < 5 & MSGP_BASELINE_DIFFERENCE_ADJUSTED >= -5, "Modest to None",
-                    MSGP_BASELINE_DIFFERENCE_ADJUSTED < -5 & MSGP_BASELINE_DIFFERENCE_ADJUSTED >= -15, "Moderate",
-                    MSGP_BASELINE_DIFFERENCE_ADJUSTED < -15 & MSGP_BASELINE_DIFFERENCE_ADJUSTED >= -25, "Large",
-                    MSGP_BASELINE_DIFFERENCE_ADJUSTED < -25, "Severe")]
+    group_aggregates[, COVID_ACADEMIC_IMPACT_SGP_DIFF_ADJ := fcase(
+                        MSGP_BASELINE_DIFFERENCE_ADJUSTED >= 5, "Improvement",
+                        MSGP_BASELINE_DIFFERENCE_ADJUSTED < 5 & MSGP_BASELINE_DIFFERENCE_ADJUSTED >= -5, "Modest to None",
+                        MSGP_BASELINE_DIFFERENCE_ADJUSTED < -5 & MSGP_BASELINE_DIFFERENCE_ADJUSTED >= -15, "Moderate",
+                        MSGP_BASELINE_DIFFERENCE_ADJUSTED < -15 & MSGP_BASELINE_DIFFERENCE_ADJUSTED >= -25, "Large",
+                        MSGP_BASELINE_DIFFERENCE_ADJUSTED < -25, "Severe")]
 
-# table(group_aggregates[YEAR==prior_year, COVID_ACADEMIC_IMPACT_SGP_DIFF, CONTENT_AREA], exclude=NULL)
-# table(group_aggregates[YEAR==current_year, COVID_ACADEMIC_IMPACT_SGP_DIFF, CONTENT_AREA], exclude=NULL)
-# table(group_aggregates[YEAR==prior_year, COVID_ACADEMIC_IMPACT_SGP_DIFF_ADJ, CONTENT_AREA], exclude=NULL)
-# table(group_aggregates[YEAR==current_year, COVID_ACADEMIC_IMPACT_SGP_DIFF_ADJ, CONTENT_AREA], exclude=NULL)
+    # table(group_aggregates[YEAR==prior_year, COVID_ACADEMIC_IMPACT_SGP_DIFF, CONTENT_AREA], exclude=NULL)
+    # table(group_aggregates[YEAR==current_year, COVID_ACADEMIC_IMPACT_SGP_DIFF, CONTENT_AREA], exclude=NULL)
+    # table(group_aggregates[YEAR==prior_year, COVID_ACADEMIC_IMPACT_SGP_DIFF_ADJ, CONTENT_AREA], exclude=NULL)
+    # table(group_aggregates[YEAR==current_year, COVID_ACADEMIC_IMPACT_SGP_DIFF_ADJ, CONTENT_AREA], exclude=NULL)
 
-#####
-###   Gamma Effect Size (within School MSGP 2021 - MSGP 2019)
-#####
+    #####
+    ###   Gamma Effect Size (within School MSGP 2021 - MSGP 2019)
+    #####
 
-###   Create uncorrected G.E.S.
-# ges_sgp <- rbindlist(list(
-#     sgp_data[,
-#         as.list(gammaEffectSizeLong(.SD, "SGP", SGP:::yearIncrement(prior_year, -2), prior_year, quantiles=c(0.5), digits=2)),
-#       keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := prior_year],
-#     sgp_data[,
-#         as.list(gammaEffectSizeLong(.SD, "SGP_BASELINE", prior_year, current_year, quantiles=c(0.5), digits=2)),
-#       keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]))
+    ges_data <- copy(sgp_data)
+    ges_data[YEAR < prior_year, SGP_BASELINE := SGP]
+    ges_sgp_prior <- ges_data[,
+            as.list(gammaEffectSizeLong(.SD, "SGP_BASELINE", SGP:::yearIncrement(prior_year, -2), prior_year, quantiles=c(0.5), digits=2)),
+          keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := prior_year]
 
-ges_data <- copy(sgp_data)
-ges_data[YEAR < prior_year, SGP_BASELINE := SGP]
-ges_sgp_prior <- ges_data[,
-        as.list(gammaEffectSizeLong(.SD, "SGP_BASELINE", SGP:::yearIncrement(prior_year, -2), prior_year, quantiles=c(0.5), digits=2)),
-      keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := prior_year]
+    ##    Now replace 2019 BASELINEs with COHORT (only for BASELINES that were present originally)
+    ges_data[YEAR == prior_year, SGP_BASELINE := SGP]
+    ges_sgp_crnt <- ges_data[,
+            as.list(gammaEffectSizeLong(.SD, "SGP_BASELINE", prior_year, current_year, quantiles=c(0.5), digits=2)),
+          keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]
 
-##    Now replace 2019 BASELINEs with COHORT (only for BASELINES that were present originally)
-ges_data[YEAR == prior_year, SGP_BASELINE := SGP]
-ges_sgp_crnt <- ges_data[,
-        as.list(gammaEffectSizeLong(.SD, "SGP_BASELINE", prior_year, current_year, quantiles=c(0.5), digits=2)),
-      keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]
+    ges_sgp <- rbindlist(list(ges_sgp_prior, ges_sgp_crnt)); rm(ges_data)
 
-ges_sgp <- rbindlist(list(ges_sgp_prior, ges_sgp_crnt)); rm(ges_data)
+    setnames(ges_sgp, "Q_50", "GES_MEDIAN_SGP")
+    setkeyv(ges_sgp, c(aggregation_group, "YEAR", "CONTENT_AREA"))
+    setkeyv(group_aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
 
-setnames(ges_sgp, "Q_50", "GES_MEDIAN_SGP")
-setkeyv(ges_sgp, c(aggregation_group, "YEAR", "CONTENT_AREA"))
-setkeyv(group_aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
+    ##    Merge in GES with other summary statistics
+    group_aggregates <- ges_sgp[group_aggregates]
 
-##    Merge in GES with other summary statistics
-group_aggregates <- ges_sgp[group_aggregates]
+    ###   RTM Adjusted G.E.S.
+    gessgp_rtm_models <- list()
+    for (CA in content_areas) {
+      gessgp_rtm_models[[CA]] <- MASS::rlm(GES_MEDIAN_SGP ~ 0 + PRIOR_MSGP_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+    }
 
-###   RTM Adjusted G.E.S.
-gessgp_rtm_models <- list()
-for (CA in content_areas) {
-  gessgp_rtm_models[[CA]] <- MASS::rlm(GES_MEDIAN_SGP ~ 0 + PRIOR_MSGP_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
-}
+    ##    Model diagnostics
+    # par(mfrow = c(2, 2))
+    # for (CA in content_areas) {
+    # hist(gessgp_rtm_models[[CA]]$residuals, breaks=50)
+    # qqnorm(gessgp_rtm_models[[CA]]$residuals);qqline(gessgp_rtm_models[[CA]]$residuals)
+    # plot(na.omit(group_aggregates[YEAR == prior_year & !is.na(PRIOR_MSGP_CENTERED_2YEAR) & CONTENT_AREA == CA, GES_MEDIAN_SGP]), gessgp_rtm_models[[CA]]$residuals)
+    # plot(na.omit(group_aggregates[YEAR == prior_year & !is.na(PRIOR_MSGP_CENTERED_2YEAR) & CONTENT_AREA == CA, GES_MEDIAN_SGP]), gessgp_rtm_models[[CA]]$fitted.values)
+    # }
 
-##    Model diagnostics
-# par(mfrow = c(2, 2))
-# for (CA in content_areas) {
-# hist(gessgp_rtm_models[[CA]]$residuals, breaks=50)
-# qqnorm(gessgp_rtm_models[[CA]]$residuals);qqline(gessgp_rtm_models[[CA]]$residuals)
-# plot(na.omit(group_aggregates[YEAR == prior_year & !is.na(PRIOR_MSGP_CENTERED_2YEAR) & CONTENT_AREA == CA, GES_MEDIAN_SGP]), gessgp_rtm_models[[CA]]$residuals)
-# plot(na.omit(group_aggregates[YEAR == prior_year & !is.na(PRIOR_MSGP_CENTERED_2YEAR) & CONTENT_AREA == CA, GES_MEDIAN_SGP]), gessgp_rtm_models[[CA]]$fitted.values)
-# }
+    ##    Create Adjusted GES_MEDIAN_SGP by subtracting coefficient for PRIOR_MSGP_CENTERED_2YEAR
+    group_aggregates[, GES_MEDIAN_SGP_ADJUSTED := as.numeric(NA)]
+    for (CA in content_areas) {
+      group_aggregates[CONTENT_AREA == CA, GES_MEDIAN_SGP_ADJUSTED := GES_MEDIAN_SGP - (PRIOR_MSGP_CENTERED_2YEAR*gessgp_rtm_models[[CA]]$coef[["PRIOR_MSGP_CENTERED_2YEAR"]])]
+    }
 
-##    Create Adjusted GES_MEDIAN_SGP by subtracting coefficient for PRIOR_MSGP_CENTERED_2YEAR
-group_aggregates[, GES_MEDIAN_SGP_ADJUSTED := as.numeric(NA)]
-for (CA in content_areas) {
-  group_aggregates[CONTENT_AREA == CA, GES_MEDIAN_SGP_ADJUSTED := GES_MEDIAN_SGP - (PRIOR_MSGP_CENTERED_2YEAR*gessgp_rtm_models[[CA]]$coef[["PRIOR_MSGP_CENTERED_2YEAR"]])]
-}
+    ##    Visualization, summary and correlation checks
+    # na.omit(group_aggregates[, as.list(round(summary(GES_MEDIAN_SGP_ADJUSTED),3)), keyby=c("YEAR", "CONTENT_AREA")])
+    # plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP, MEDIAN_SGP_PRIOR_2YEAR])
+    # plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP, PRIOR_MSGP_CENTERED_2YEAR])
+    # plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR])
+    # plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP_ADJUSTED, PRIOR_MSGP_CENTERED_2YEAR])
+    # cor(group_aggregates[, GES_MEDIAN_SGP_ADJUSTED, GES_MEDIAN_SGP], use='complete.obs')
+    # cor(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP_ADJUSTED, GES_MEDIAN_SGP], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year, GES_MEDIAN_SGP_ADJUSTED, GES_MEDIAN_SGP], use='complete.obs')
+    #
+    # cor(group_aggregates[, GES_MEDIAN_SGP, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year, GES_MEDIAN_SGP, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[, GES_MEDIAN_SGP_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year, GES_MEDIAN_SGP_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "ELA", GES_MEDIAN_SGP_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "MATHEMATICS", GES_MEDIAN_SGP_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
+    #
+    # ges_2019_ela_adj <- lm(GES_MEDIAN_SGP_ADJUSTED ~ MEDIAN_SGP_PRIOR_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == "ELA"]); summary(ges_2019_ela_adj)
+    # ges_2019_math_adj<- lm(GES_MEDIAN_SGP_ADJUSTED ~ MEDIAN_SGP_PRIOR_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == "MATHEMATICS"]); summary(ges_2019_math_adj)
 
-##    Visualization, summary and correlation checks
-# na.omit(group_aggregates[, as.list(round(summary(GES_MEDIAN_SGP_ADJUSTED),3)), keyby=c("YEAR", "CONTENT_AREA")])
-# plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP, MEDIAN_SGP_PRIOR_2YEAR])
-# plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP, PRIOR_MSGP_CENTERED_2YEAR])
-# plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR])
-# plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP_ADJUSTED, PRIOR_MSGP_CENTERED_2YEAR])
-# cor(group_aggregates[, GES_MEDIAN_SGP_ADJUSTED, GES_MEDIAN_SGP], use='complete.obs')
-# cor(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP_ADJUSTED, GES_MEDIAN_SGP], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year, GES_MEDIAN_SGP_ADJUSTED, GES_MEDIAN_SGP], use='complete.obs')
-#
-# cor(group_aggregates[, GES_MEDIAN_SGP, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year, GES_MEDIAN_SGP, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[, GES_MEDIAN_SGP_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[YEAR == prior_year, GES_MEDIAN_SGP_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year, GES_MEDIAN_SGP_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "ELA", GES_MEDIAN_SGP_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "MATHEMATICS", GES_MEDIAN_SGP_ADJUSTED, MEDIAN_SGP_PRIOR_2YEAR], use='complete.obs')
-#
-# ges_2019_ela_adj <- lm(GES_MEDIAN_SGP_ADJUSTED ~ MEDIAN_SGP_PRIOR_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == "ELA"]); summary(ges_2019_ela_adj)
-# ges_2019_math_adj<- lm(GES_MEDIAN_SGP_ADJUSTED ~ MEDIAN_SGP_PRIOR_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == "MATHEMATICS"]); summary(ges_2019_math_adj)
+    ##    Create COVID Impact Levels for G.E.S. for 2021 - 2019 Median SGP differences
+    group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP := fcase(
+                        GES_MEDIAN_SGP >= 0.2, "Improvement",
+                        GES_MEDIAN_SGP <  0.2 & GES_MEDIAN_SGP >= -0.2, "Modest to None",
+                        GES_MEDIAN_SGP < -0.2 & GES_MEDIAN_SGP >= -0.5, "Moderate",
+                        GES_MEDIAN_SGP < -0.5 & GES_MEDIAN_SGP >= -0.8, "Large",
+                        GES_MEDIAN_SGP < -0.8, "Severe")]
 
-##    Create COVID Impact Levels for G.E.S. for 2021 - 2019 Median SGP differences
-group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP := fcase(
-                    GES_MEDIAN_SGP >= 0.2, "Improvement",
-                    GES_MEDIAN_SGP <  0.2 & GES_MEDIAN_SGP >= -0.2, "Modest to None",
-                    GES_MEDIAN_SGP < -0.2 & GES_MEDIAN_SGP >= -0.5, "Moderate",
-                    GES_MEDIAN_SGP < -0.5 & GES_MEDIAN_SGP >= -0.8, "Large",
-                    GES_MEDIAN_SGP < -0.8, "Severe")]
+    group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ := fcase(
+                        GES_MEDIAN_SGP_ADJUSTED >= 0.2, "Improvement",
+                        GES_MEDIAN_SGP_ADJUSTED <  0.2 & GES_MEDIAN_SGP_ADJUSTED >= -0.2, "Modest to None",
+                        GES_MEDIAN_SGP_ADJUSTED < -0.2 & GES_MEDIAN_SGP_ADJUSTED >= -0.5, "Moderate",
+                        GES_MEDIAN_SGP_ADJUSTED < -0.5 & GES_MEDIAN_SGP_ADJUSTED >= -0.8, "Large",
+                        GES_MEDIAN_SGP_ADJUSTED < -0.8, "Severe")]
 
-group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ := fcase(
-                    GES_MEDIAN_SGP_ADJUSTED >= 0.2, "Improvement",
-                    GES_MEDIAN_SGP_ADJUSTED <  0.2 & GES_MEDIAN_SGP_ADJUSTED >= -0.2, "Modest to None",
-                    GES_MEDIAN_SGP_ADJUSTED < -0.2 & GES_MEDIAN_SGP_ADJUSTED >= -0.5, "Moderate",
-                    GES_MEDIAN_SGP_ADJUSTED < -0.5 & GES_MEDIAN_SGP_ADJUSTED >= -0.8, "Large",
-                    GES_MEDIAN_SGP_ADJUSTED < -0.8, "Severe")]
+    # table(group_aggregates[YEAR==prior_year, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP, CONTENT_AREA], exclude=NULL)
+    # table(group_aggregates[YEAR==current_year, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP, CONTENT_AREA], exclude=NULL)
+    # table(group_aggregates[YEAR==prior_year, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ, CONTENT_AREA], exclude=NULL)
+    # table(group_aggregates[YEAR==current_year, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ, CONTENT_AREA], exclude=NULL)
 
-# table(group_aggregates[YEAR==prior_year, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP, CONTENT_AREA], exclude=NULL)
-# table(group_aggregates[YEAR==current_year, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP, CONTENT_AREA], exclude=NULL)
-# table(group_aggregates[YEAR==prior_year, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ, CONTENT_AREA], exclude=NULL)
-# table(group_aggregates[YEAR==current_year, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ, CONTENT_AREA], exclude=NULL)
+    ####################################################################################
+    #####
+    ###   MEAN_SCALE_SCORE_STANDARDIZED
+    #####
+    ####################################################################################
 
-####################################################################################
-#####
-###   MEAN_SCALE_SCORE_STANDARDIZED
-#####
-####################################################################################
+    ###   Create uncorrected mean scale score difference (2021 - 2019)
+    group_aggregates[, MSSS_DIFFERENCE_UNCORRECTED := MEAN_SCALE_SCORE_STANDARDIZED - MEAN_SCALE_SCORE_PRIOR_2YEAR_STANDARDIZED]
 
-###   Create uncorrected mean scale score difference (2021 - 2019)
-group_aggregates[, MSSS_DIFFERENCE_UNCORRECTED := MEAN_SCALE_SCORE_STANDARDIZED - MEAN_SCALE_SCORE_PRIOR_2YEAR_STANDARDIZED]
+    ###   RTM Adjusted MSSS_DIFFERENCE
+    msss_rtm_models <- list()
+    for (CA in content_areas) {
+      msss_rtm_models[[CA]] <- MASS::rlm(MSSS_DIFFERENCE_UNCORRECTED ~ 0 + PRIOR_MSSS_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+    }
 
-###   RTM Adjusted MSSS_DIFFERENCE
-msss_rtm_models <- list()
-for (CA in content_areas) {
-  msss_rtm_models[[CA]] <- MASS::rlm(MSSS_DIFFERENCE_UNCORRECTED ~ 0 + PRIOR_MSSS_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
-}
+    ##    Model diagnostics
+    # par(mfrow = c(2, 2))
+    # for (CA in content_areas) {
+    # hist(msss_rtm_models[[CA]]$residuals, breaks=50)
+    # qqnorm(msss_rtm_models[[CA]]$residuals);qqline(msss_rtm_models[[CA]]$residuals)
+    # plot(na.omit(group_aggregates[YEAR == prior_year & CONTENT_AREA == CA & !is.na(PRIOR_MSSS_CENTERED_2YEAR), MSSS_DIFFERENCE_UNCORRECTED]), msss_rtm_models[[CA]]$residuals)
+    # plot(na.omit(group_aggregates[YEAR == prior_year & CONTENT_AREA == CA & !is.na(PRIOR_MSSS_CENTERED_2YEAR), MEAN_SCALE_SCORE_STANDARDIZED]), msss_rtm_models[[CA]]$fitted.values)
+    # }
 
-##    Model diagnostics
-# par(mfrow = c(2, 2))
-# for (CA in content_areas) {
-# hist(msss_rtm_models[[CA]]$residuals, breaks=50)
-# qqnorm(msss_rtm_models[[CA]]$residuals);qqline(msss_rtm_models[[CA]]$residuals)
-# plot(na.omit(group_aggregates[YEAR == prior_year & CONTENT_AREA == CA & !is.na(PRIOR_MSSS_CENTERED_2YEAR), MSSS_DIFFERENCE_UNCORRECTED]), msss_rtm_models[[CA]]$residuals)
-# plot(na.omit(group_aggregates[YEAR == prior_year & CONTENT_AREA == CA & !is.na(PRIOR_MSSS_CENTERED_2YEAR), MEAN_SCALE_SCORE_STANDARDIZED]), msss_rtm_models[[CA]]$fitted.values)
-# }
+    ##    Create Adjusted MSSS_DIFFERENCE_ by subtracting coefficient for PRIOR_MSSS_CENTERED_2YEAR
+    group_aggregates[, MSSS_DIFFERENCE_ADJUSTED := as.numeric(NA)]
+    for (CA in content_areas) {
+      group_aggregates[CONTENT_AREA == CA, MSSS_DIFFERENCE_ADJUSTED := MSSS_DIFFERENCE_UNCORRECTED - (PRIOR_MSSS_CENTERED_2YEAR*msss_rtm_models[[CA]]$coef[["PRIOR_MSSS_CENTERED_2YEAR"]])]
+    }
 
-##    Create Adjusted MSSS_DIFFERENCE_ by subtracting coefficient for PRIOR_MSSS_CENTERED_2YEAR
-group_aggregates[, MSSS_DIFFERENCE_ADJUSTED := as.numeric(NA)]
-for (CA in content_areas) {
-  group_aggregates[CONTENT_AREA == CA, MSSS_DIFFERENCE_ADJUSTED := MSSS_DIFFERENCE_UNCORRECTED - (PRIOR_MSSS_CENTERED_2YEAR*msss_rtm_models[[CA]]$coef[["PRIOR_MSSS_CENTERED_2YEAR"]])]
-}
-
-##    correlation checks
-# cor(group_aggregates[, MSSS_DIFFERENCE_UNCORRECTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[YEAR == prior_year, MSSS_DIFFERENCE_UNCORRECTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year, MSSS_DIFFERENCE_UNCORRECTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[, MSSS_DIFFERENCE_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[YEAR == prior_year, MSSS_DIFFERENCE_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year, MSSS_DIFFERENCE_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "ELA", MSSS_DIFFERENCE_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "MATHEMATICS", MSSS_DIFFERENCE_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    ##    correlation checks
+    # cor(group_aggregates[, MSSS_DIFFERENCE_UNCORRECTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[YEAR == prior_year, MSSS_DIFFERENCE_UNCORRECTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year, MSSS_DIFFERENCE_UNCORRECTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[, MSSS_DIFFERENCE_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[YEAR == prior_year, MSSS_DIFFERENCE_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year, MSSS_DIFFERENCE_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "ELA", MSSS_DIFFERENCE_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "MATHEMATICS", MSSS_DIFFERENCE_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
 
 
-#####
-###   Gamma Effect Size (within School MSSS 2021 - MSSS 2019)
-#####
+    #####
+    ###   Gamma Effect Size (within School MSSS 2021 - MSSS 2019)
+    #####
 
-###   Create uncorrected G.E.S.
-ges_sss <- rbindlist(list(
-    sgp_data[,
-        as.list(gammaEffectSizeLong(.SD, "SCALE_SCORE_STANDARDIZED", SGP:::yearIncrement(prior_year, -2), prior_year, quantiles=c(0.5), digits=2)),
-      keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := prior_year],
-    sgp_data[,
-        as.list(gammaEffectSizeLong(.SD, "SCALE_SCORE_STANDARDIZED", prior_year, current_year, quantiles=c(0.5), digits=2)),
-      keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]))
+    ###   Create uncorrected G.E.S.
+    ges_sss <- rbindlist(list(
+        sgp_data[,
+            as.list(gammaEffectSizeLong(.SD, "SCALE_SCORE_STANDARDIZED", SGP:::yearIncrement(prior_year, -2), prior_year, quantiles=c(0.5), digits=2)),
+          keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := prior_year],
+        sgp_data[,
+            as.list(gammaEffectSizeLong(.SD, "SCALE_SCORE_STANDARDIZED", prior_year, current_year, quantiles=c(0.5), digits=2)),
+          keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]))
 
-setnames(ges_sss, "Q_50", "GES_MEDIAN_SSS")
-setkeyv(ges_sss, c(aggregation_group, "YEAR", "CONTENT_AREA"))
-setkeyv(group_aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
+    setnames(ges_sss, "Q_50", "GES_MEDIAN_SSS")
+    setkeyv(ges_sss, c(aggregation_group, "YEAR", "CONTENT_AREA"))
+    setkeyv(group_aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
 
-##    Merge in GES with other summary statistics
-group_aggregates <- ges_sss[group_aggregates]
+    ##    Merge in GES with other summary statistics
+    group_aggregates <- ges_sss[group_aggregates]
 
-###   RTM Adjusted G.E.S.
-gesss_rtm_models <- list()
-for (CA in content_areas) {
-  gesss_rtm_models[[CA]] <- MASS::rlm(GES_MEDIAN_SSS ~ 0 + PRIOR_MSSS_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
-}
+    ###   RTM Adjusted G.E.S.
+    gesss_rtm_models <- list()
+    for (CA in content_areas) {
+      gesss_rtm_models[[CA]] <- MASS::rlm(GES_MEDIAN_SSS ~ 0 + PRIOR_MSSS_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+    }
 
-##    Model diagnostics
-# par(mfrow = c(2, 2))
-# for (CA in content_areas) {
-# hist(gesss_rtm_models[[CA]]$residuals, breaks=50)
-# qqnorm(gesss_rtm_models[[CA]]$residuals);qqline(gesss_rtm_models[[CA]]$residuals)
-# plot(na.omit(group_aggregates[YEAR == prior_year & !is.na(PRIOR_MSSS_CENTERED_2YEAR) & CONTENT_AREA == CA, GES_MEDIAN_SSS]), gesss_rtm_models[[CA]]$residuals)
-# plot(na.omit(group_aggregates[YEAR == prior_year & !is.na(PRIOR_MSSS_CENTERED_2YEAR) & CONTENT_AREA == CA, GES_MEDIAN_SSS]), gesss_rtm_models[[CA]]$fitted.values)
-# }
+    ##    Model diagnostics
+    # par(mfrow = c(2, 2))
+    # for (CA in content_areas) {
+    # hist(gesss_rtm_models[[CA]]$residuals, breaks=50)
+    # qqnorm(gesss_rtm_models[[CA]]$residuals);qqline(gesss_rtm_models[[CA]]$residuals)
+    # plot(na.omit(group_aggregates[YEAR == prior_year & !is.na(PRIOR_MSSS_CENTERED_2YEAR) & CONTENT_AREA == CA, GES_MEDIAN_SSS]), gesss_rtm_models[[CA]]$residuals)
+    # plot(na.omit(group_aggregates[YEAR == prior_year & !is.na(PRIOR_MSSS_CENTERED_2YEAR) & CONTENT_AREA == CA, GES_MEDIAN_SSS]), gesss_rtm_models[[CA]]$fitted.values)
+    # }
 
-##    Create Adjusted GES_MEDIAN_SSS by subtracting coefficient for PRIOR_MSSS_CENTERED_2YEAR
-group_aggregates[, GES_MEDIAN_SSS_ADJUSTED := as.numeric(NA)]
-for (CA in content_areas) {
-  group_aggregates[CONTENT_AREA == CA, GES_MEDIAN_SSS_ADJUSTED := GES_MEDIAN_SSS - (PRIOR_MSSS_CENTERED_2YEAR*gesss_rtm_models[[CA]]$coef[["PRIOR_MSSS_CENTERED_2YEAR"]])]
-}
+    ##    Create Adjusted GES_MEDIAN_SSS by subtracting coefficient for PRIOR_MSSS_CENTERED_2YEAR
+    group_aggregates[, GES_MEDIAN_SSS_ADJUSTED := as.numeric(NA)]
+    for (CA in content_areas) {
+      group_aggregates[CONTENT_AREA == CA, GES_MEDIAN_SSS_ADJUSTED := GES_MEDIAN_SSS - (PRIOR_MSSS_CENTERED_2YEAR*gesss_rtm_models[[CA]]$coef[["PRIOR_MSSS_CENTERED_2YEAR"]])]
+    }
 
-##    Visualization, summary and correlation checks
-# na.omit(group_aggregates[, as.list(round(summary(GES_MEDIAN_SSS_ADJUSTED),3)), keyby=c("YEAR", "CONTENT_AREA")])
-# plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED])
-# plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS, PRIOR_MSSS_CENTERED_2YEAR])
-# plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED])
-# plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS_ADJUSTED, PRIOR_MSSS_CENTERED_2YEAR])
-# cor(group_aggregates[, GES_MEDIAN_SSS_ADJUSTED, GES_MEDIAN_SSS], use='complete.obs')
-# cor(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS_ADJUSTED, GES_MEDIAN_SSS], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year, GES_MEDIAN_SSS_ADJUSTED, GES_MEDIAN_SSS], use='complete.obs')
+    ##    Visualization, summary and correlation checks
+    # na.omit(group_aggregates[, as.list(round(summary(GES_MEDIAN_SSS_ADJUSTED),3)), keyby=c("YEAR", "CONTENT_AREA")])
+    # plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED])
+    # plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS, PRIOR_MSSS_CENTERED_2YEAR])
+    # plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED])
+    # plot(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS_ADJUSTED, PRIOR_MSSS_CENTERED_2YEAR])
+    # cor(group_aggregates[, GES_MEDIAN_SSS_ADJUSTED, GES_MEDIAN_SSS], use='complete.obs')
+    # cor(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS_ADJUSTED, GES_MEDIAN_SSS], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year, GES_MEDIAN_SSS_ADJUSTED, GES_MEDIAN_SSS], use='complete.obs')
 
-# cor(group_aggregates[, GES_MEDIAN_SSS, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year, GES_MEDIAN_SSS, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[, GES_MEDIAN_SSS_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year, GES_MEDIAN_SSS_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "ELA", GES_MEDIAN_SSS_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
-# cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "MATHEMATICS", GES_MEDIAN_SSS_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[, GES_MEDIAN_SSS, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year, GES_MEDIAN_SSS, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[, GES_MEDIAN_SSS_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[YEAR == prior_year, GES_MEDIAN_SSS_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year, GES_MEDIAN_SSS_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "ELA", GES_MEDIAN_SSS_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
+    # cor(group_aggregates[YEAR == current_year & CONTENT_AREA == "MATHEMATICS", GES_MEDIAN_SSS_ADJUSTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
 
-# ges_ss_19_ela_adj <- lm(GES_MEDIAN_SSS_ADJUSTED ~ MEAN_SCALE_SCORE_PRIOR_STANDARDIZED, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == "ELA"]); summary(ges_ss_19_ela_adj)
-# ges_ss_19_math_adj<- lm(GES_MEDIAN_SSS_ADJUSTED ~ MEAN_SCALE_SCORE_PRIOR_STANDARDIZED, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == "MATHEMATICS"]); summary(ges_ss_19_math_adj)
+    # ges_ss_19_ela_adj <- lm(GES_MEDIAN_SSS_ADJUSTED ~ MEAN_SCALE_SCORE_PRIOR_STANDARDIZED, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == "ELA"]); summary(ges_ss_19_ela_adj)
+    # ges_ss_19_math_adj<- lm(GES_MEDIAN_SSS_ADJUSTED ~ MEAN_SCALE_SCORE_PRIOR_STANDARDIZED, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == "MATHEMATICS"]); summary(ges_ss_19_math_adj)
 
 
-##    Create COVID Impact Levels for MSGP Baseline Differences
-group_aggregates[, COVID_ACADEMIC_IMPACT_SSS_DIFF := fcase(
-                    MSSS_DIFFERENCE_UNCORRECTED >= 5, "Improvement",
-                    MSSS_DIFFERENCE_UNCORRECTED < 5 & MSSS_DIFFERENCE_UNCORRECTED >= -5, "Modest to None",
-                    MSSS_DIFFERENCE_UNCORRECTED < -5 & MSSS_DIFFERENCE_UNCORRECTED >= -15, "Moderate",
-                    MSSS_DIFFERENCE_UNCORRECTED < -15 & MSSS_DIFFERENCE_UNCORRECTED >= -25, "Large",
-                    MSSS_DIFFERENCE_UNCORRECTED < -25, "Severe")]
+    ##    Create COVID Impact Levels for MSGP Baseline Differences
+    group_aggregates[, COVID_ACADEMIC_IMPACT_SSS_DIFF := fcase(
+                        MSSS_DIFFERENCE_UNCORRECTED >= 5, "Improvement",
+                        MSSS_DIFFERENCE_UNCORRECTED < 5 & MSSS_DIFFERENCE_UNCORRECTED >= -5, "Modest to None",
+                        MSSS_DIFFERENCE_UNCORRECTED < -5 & MSSS_DIFFERENCE_UNCORRECTED >= -15, "Moderate",
+                        MSSS_DIFFERENCE_UNCORRECTED < -15 & MSSS_DIFFERENCE_UNCORRECTED >= -25, "Large",
+                        MSSS_DIFFERENCE_UNCORRECTED < -25, "Severe")]
 
-group_aggregates[, COVID_ACADEMIC_IMPACT_SSS_DIFF_ADJ := fcase(
-                    MSSS_DIFFERENCE_ADJUSTED >= 5, "Improvement",
-                    MSSS_DIFFERENCE_ADJUSTED < 5 & MSSS_DIFFERENCE_ADJUSTED >= -5, "Modest to None",
-                    MSSS_DIFFERENCE_ADJUSTED < -5 & MSSS_DIFFERENCE_ADJUSTED >= -15, "Moderate",
-                    MSSS_DIFFERENCE_ADJUSTED < -15 & MSSS_DIFFERENCE_ADJUSTED >= -25, "Large",
-                    MSSS_DIFFERENCE_ADJUSTED < -25, "Severe")]
+    group_aggregates[, COVID_ACADEMIC_IMPACT_SSS_DIFF_ADJ := fcase(
+                        MSSS_DIFFERENCE_ADJUSTED >= 5, "Improvement",
+                        MSSS_DIFFERENCE_ADJUSTED < 5 & MSSS_DIFFERENCE_ADJUSTED >= -5, "Modest to None",
+                        MSSS_DIFFERENCE_ADJUSTED < -5 & MSSS_DIFFERENCE_ADJUSTED >= -15, "Moderate",
+                        MSSS_DIFFERENCE_ADJUSTED < -15 & MSSS_DIFFERENCE_ADJUSTED >= -25, "Large",
+                        MSSS_DIFFERENCE_ADJUSTED < -25, "Severe")]
 
-##    Create COVID Impact Levels for G.E.S. for 2021 - 2019 Median SGP differences
-group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS := fcase(
-                    GES_MEDIAN_SSS >= 0.2, "Improvement",
-                    GES_MEDIAN_SSS <  0.2 & GES_MEDIAN_SSS >= -0.2, "Modest to None",
-                    GES_MEDIAN_SSS < -0.2 & GES_MEDIAN_SSS >= -0.5, "Moderate",
-                    GES_MEDIAN_SSS < -0.5 & GES_MEDIAN_SSS >= -0.8, "Large",
-                    GES_MEDIAN_SSS < -0.8, "Severe")]
+    ##    Create COVID Impact Levels for G.E.S. for 2021 - 2019 Median SGP differences
+    group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS := fcase(
+                        GES_MEDIAN_SSS >= 0.2, "Improvement",
+                        GES_MEDIAN_SSS <  0.2 & GES_MEDIAN_SSS >= -0.2, "Modest to None",
+                        GES_MEDIAN_SSS < -0.2 & GES_MEDIAN_SSS >= -0.5, "Moderate",
+                        GES_MEDIAN_SSS < -0.5 & GES_MEDIAN_SSS >= -0.8, "Large",
+                        GES_MEDIAN_SSS < -0.8, "Severe")]
 
-group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS_ADJ := fcase(
-                    GES_MEDIAN_SSS_ADJUSTED >= 0.2, "Improvement",
-                    GES_MEDIAN_SSS_ADJUSTED <  0.2 & GES_MEDIAN_SSS_ADJUSTED >= -0.2, "Modest to None",
-                    GES_MEDIAN_SSS_ADJUSTED < -0.2 & GES_MEDIAN_SSS_ADJUSTED >= -0.5, "Moderate",
-                    GES_MEDIAN_SSS_ADJUSTED < -0.5 & GES_MEDIAN_SSS_ADJUSTED >= -0.8, "Large",
-                    GES_MEDIAN_SSS_ADJUSTED < -0.8, "Severe")]
+    group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS_ADJ := fcase(
+                        GES_MEDIAN_SSS_ADJUSTED >= 0.2, "Improvement",
+                        GES_MEDIAN_SSS_ADJUSTED <  0.2 & GES_MEDIAN_SSS_ADJUSTED >= -0.2, "Modest to None",
+                        GES_MEDIAN_SSS_ADJUSTED < -0.2 & GES_MEDIAN_SSS_ADJUSTED >= -0.5, "Moderate",
+                        GES_MEDIAN_SSS_ADJUSTED < -0.5 & GES_MEDIAN_SSS_ADJUSTED >= -0.8, "Large",
+                        GES_MEDIAN_SSS_ADJUSTED < -0.8, "Severe")]
 
     tmp.list <- list(TEMP=group_aggregates)
     names(tmp.list) <- paste(aggregation_group, collapse="_by_")

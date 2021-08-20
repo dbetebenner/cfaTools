@@ -52,14 +52,42 @@
     if (is.null(prior_year)) prior_year <- tail(sort(unique(sgp_data[['YEAR']])), 2)[-2]
     if (is.null(content_areas)) content_areas <- unique(sgp_data[['CONTENT_AREA']])
     if (is.null(grades)) grades <- unique(sgp_data[['GRADE']])
+    year_gap <- as.numeric(unlist(strsplit(current_year, split="_"))) - as.numeric(unlist(strsplit(prior_year, split="_")))
 
-    ### Create additional variables necessary for aggregates
-    if (!"SCALE_SCORE_STANDARDIZED" %in% names(sgp_data)) {
-        sgp_data[, SCALE_SCORE_STANDARDIZED := Z(.SD, "SCALE_SCORE", reference.year = "2019"), by = list(CONTENT_AREA, GRADE), .SDcols = c("YEAR", "CONTENT_AREA", "GRADE", "SCALE_SCORE")]
-    }
-    shift.key <- c("ID", "CONTENT_AREA", "YEAR")
+    ### Prepare data and add additional variables
+    sgp_data <- sgp_data[VALID_CASE == "VALID_CASE"]
+
+    ###   Create Lagged Achievement (ORIGINAL and EQUATED) variables that include missing scores (and others potentially)
+    shift.key <- c("ID", "CONTENT_AREA", "YEAR", "GRADE")
+
+    ##    Standardize SCALE_SCORE by CONTENT_AREA and GRADE using 2019 norms
+    sgp_data[, SCALE_SCORE_STANDARDIZED := Z(.SD, "SCALE_SCORE", reference.year = prior_year), by = list(CONTENT_AREA, GRADE), .SDcols = c("YEAR", "CONTENT_AREA", "GRADE", "SCALE_SCORE")]
+
     setkeyv(sgp_data, shift.key)
-    sgp_data[, c("SCALE_SCORE_PRIOR_STANDARDIZED_2YEAR", "ACHIEVEMENT_LEVEL_PRIOR_2YEAR") := shift(list(SCALE_SCORE_STANDARDIZED, ACHIEVEMENT_LEVEL), 2), by = list(ID, CONTENT_AREA)]
+    sgp_data[, c("SCALE_SCORE_PRIOR_1YEAR", "SCALE_SCORE_PRIOR_2YEAR") := shift(SCALE_SCORE, 1:2), by = list(ID, CONTENT_AREA)]
+    sgp_data[, c("SCALE_SCORE_PRIOR_STANDARDIZED_1YEAR", "SCALE_SCORE_PRIOR_STANDARDIZED_2YEAR") := shift(SCALE_SCORE_STANDARDIZED, 1:2), by = list(ID, CONTENT_AREA)]
+    sgp_data[, c("ACHIEVEMENT_LEVEL_PRIOR_1YEAR", "ACHIEVEMENT_LEVEL_PRIOR_2YEAR") := shift(ACHIEVEMENT_LEVEL, 1:2), by = list(ID, CONTENT_AREA)]
+    if (year_gap!=1) {
+        ##    Fix 2021 Lags since no 2020 data:
+        sgp_data[YEAR == '2021', SCALE_SCORE_PRIOR_2YEAR := SCALE_SCORE_PRIOR_1YEAR]
+        sgp_data[YEAR == '2021', SCALE_SCORE_PRIOR_STANDARDIZED_2YEAR := SCALE_SCORE_PRIOR_STANDARDIZED_1YEAR]
+        sgp_data[YEAR == '2021', ACHIEVEMENT_LEVEL_PRIOR_2YEAR := ACHIEVEMENT_LEVEL_PRIOR_1YEAR]
+        sgp_data[YEAR == '2021', SCALE_SCORE_PRIOR_1YEAR := NA]
+        sgp_data[YEAR == '2021', SCALE_SCORE_PRIOR_STANDARDIZED_1YEAR := NA]
+        sgp_data[YEAR == '2021', ACHIEVEMENT_LEVEL_PRIOR_1YEAR := NA]
+        # table(sgp_data[, YEAR, is.na(SCALE_SCORE_PRIOR_2YEAR)], exclude=NULL)
+        # table(sgp_data[, GRADE, is.na(SCALE_SCORE_PRIOR_2YEAR)], exclude=NULL) # Remove 2YEAR priors for Grades 3 & 4 - repeaters
+        sgp_data[GRADE %in% c(3, 4), SCALE_SCORE_PRIOR_2YEAR := NA]
+        sgp_data[GRADE %in% c(3, 4), SCALE_SCORE_PRIOR_STANDARDIZED_2YEAR := NA]
+        sgp_data[GRADE %in% c(3, 4), ACHIEVEMENT_LEVEL_PRIOR_2YEAR := NA]
+        sgp_data[GRADE == 3, SCALE_SCORE_PRIOR_1YEAR := NA]
+        sgp_data[GRADE == 3, SCALE_SCORE_PRIOR_STANDARDIZED_1YEAR := NA]
+        sgp_data[GRADE == 3, ACHIEVEMENT_LEVEL_PRIOR_1YEAR := NA]
+        # table(sgp_data[YEAR=='2019', is.na(SCALE_SCORE_PRIOR_BASELINE), is.na(SCALE_SCORE_PRIOR_2YEAR)], exclude=NULL)
+        # cor(sgp_data[, SCALE_SCORE_PRIOR_BASELINE, SCALE_SCORE_PRIOR_2YEAR], use='complete.obs') # Not perfect.  Use BASELINE data when available:
+        sgp_data[!is.na(SCALE_SCORE_PRIOR_BASELINE), SCALE_SCORE_PRIOR_2YEAR := SCALE_SCORE_PRIOR_BASELINE]
+        # sgp_data[!is.na(SCALE_SCORE_PRIOR_STANDARDIZED_BASELINE), SCALE_SCORE_PRIOR_STANDARDIZED_2YEAR := SCALE_SCORE_PRIOR_STANDARDIZED_BASELINE] # Keep on 2019 scale!
+    }
 
     ### Create School Level Summary Table
     school.aggregates <- sgp_data[

@@ -1,5 +1,5 @@
 ---
-title: "Exploring Ho's (2021) Fair Trend Metric"
+title: "Exploring Ho's Fair Trend Metric"
 author: "Nathan Dadey"
 date: "May 3, 2021"
 output: rmarkdown::html_vignette

@@ -10,7 +10,8 @@ academicImpactSummary(
 	current_year=NULL,
 	prior_year=NULL,
 	content_areas=NULL,
-	grades=NULL,
+	all_grades=NULL,
+	sgp_grades=NULL,
 	aggregation_group="SCHOOL_NUMBER")
 }
 
@@ -25,7 +26,9 @@ academicImpactSummary(
   }
   \item{content_areas}{Content areas for which to calculate academic impact.
   }
-  \item{grades}{Grades within the designated content areas to calculate academic impact.
+	\item{all_grades}{Grades within the designated content areas to calculate academic STATUS impact.
+  }
+  \item{sgp_grades}{Grades within the designated content areas to calculate academic GROWTH impact.
   }
   \item{aggregation_group}{Character string indicating groups to aggregate by and create impact summaries for.
   }
@@ -48,7 +51,8 @@ academicImpactSummary(
 			current_year="2021",
 			prior_year="2019",
 			content_areas=c("ELA", "MATHEMATICS"),
-			grades=as.character(3:8))
+			all_grades=as.character(3:8),
+			sgp_grades=as.character(5:8))
 	}
 }
 

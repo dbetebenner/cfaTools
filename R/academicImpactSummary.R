@@ -54,7 +54,7 @@
     if (is.null(content_areas)) content_areas <- unique(sgp_data[['CONTENT_AREA']])
     if (is.null(all_grades)) all_grades <- sort(unique(sgp_data[['GRADE']]))
     if (is.null(sgp_grades)) sgp_grades <- sort(unique(sgp_data[!is.na(SGP_BASELINE), GRADE]))
-    year_gap <- as.numeric(unlist(strsplit(current_year, split="_"))) - as.numeric(unlist(strsplit(prior_year, split="_")))
+    year_gap <- tail(as.numeric(unlist(strsplit(current_year, split="_"))) - as.numeric(unlist(strsplit(prior_year, split="_"))), 1)
 
     ### Prepare data and add additional variables
     sgp_data <- sgp_data[VALID_CASE == "VALID_CASE"]
@@ -417,6 +417,12 @@
 
     group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS_ADJ :=
                         factor(COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS_ADJ, levels=c("Improvement", "Modest to None", "Moderate", "Large", "Severe"), ordered=TRUE)]
+
+    ###   Save RTM Models as `attributes` meta-data
+    setattr(group_aggregates, "msgp_rtm_models", msgp_rtm_models)
+    setattr(group_aggregates, "gessgp_rtm_models", gessgp_rtm_models)
+    setattr(group_aggregates, "msss_rtm_models", msss_rtm_models)
+    setattr(group_aggregates, "gesss_rtm_models", gesss_rtm_models)
 
     tmp.list <- list(TEMP=group_aggregates)
     names(tmp.list) <- paste(aggregation_group, collapse="_by_")

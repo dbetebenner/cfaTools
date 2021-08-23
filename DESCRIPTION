@@ -1,6 +1,6 @@
 Package: cfaTools
-Version: 0.0-1.92
-Date: 2021-8-20
+Version: 0.0-1.93
+Date: 2021-8-22
 Title: Center for Assessment Tools for Large Scale Educational Assessment Analysis
 Description: Center for Assessment developed Tools for Large Scale Educational Assessment.
 Authors@R: c(person(given=c("Damian", "W."), family="Betebenner", email="dbetebenner@nciea.org", role=c("aut", "cre")),

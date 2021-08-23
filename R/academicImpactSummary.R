@@ -36,7 +36,7 @@
         prof.not.proficient <- SGP::SGPstateData[[state_abb]][['Achievement']][['Levels']][['Proficient']]
         proficient.achievement.levels <- achievement.levels[which(prof.not.proficient=="Proficient")]
         tmp.table <- table(achievement_level)
-        100*sum(tmp.table[proficient.achievement.levels])/sum(tmp.table)
+        100*sum(tmp.table[proficient.achievement.levels], na.rm=TRUE)/sum(tmp.table, na.rm=TRUE)
     }
 
     Z <- function(data_table, var.to.standardize, reference.year = NULL, rm.na = TRUE) {
@@ -159,12 +159,18 @@
                         MSGP_BASELINE_DIFFERENCE_UNCORRECTED < -15 & MSGP_BASELINE_DIFFERENCE_UNCORRECTED >= -25, "Large",
                         MSGP_BASELINE_DIFFERENCE_UNCORRECTED < -25, "Severe")]
 
+    group_aggregates[, COVID_ACADEMIC_IMPACT_SGP_DIFF :=
+                        factor(COVID_ACADEMIC_IMPACT_SGP_DIFF, levels=c("Improvement", "Modest to None", "Moderate", "Large", "Severe"), ordered=TRUE)]
+
     group_aggregates[, COVID_ACADEMIC_IMPACT_SGP_DIFF_ADJ := fcase(
                         MSGP_BASELINE_DIFFERENCE_ADJUSTED >= 5, "Improvement",
                         MSGP_BASELINE_DIFFERENCE_ADJUSTED < 5 & MSGP_BASELINE_DIFFERENCE_ADJUSTED >= -5, "Modest to None",
                         MSGP_BASELINE_DIFFERENCE_ADJUSTED < -5 & MSGP_BASELINE_DIFFERENCE_ADJUSTED >= -15, "Moderate",
                         MSGP_BASELINE_DIFFERENCE_ADJUSTED < -15 & MSGP_BASELINE_DIFFERENCE_ADJUSTED >= -25, "Large",
                         MSGP_BASELINE_DIFFERENCE_ADJUSTED < -25, "Severe")]
+
+    group_aggregates[, COVID_ACADEMIC_IMPACT_SGP_DIFF_ADJ :=
+                        factor(COVID_ACADEMIC_IMPACT_SGP_DIFF_ADJ, levels=c("Improvement", "Modest to None", "Moderate", "Large", "Severe"), ordered=TRUE)]
 
     # table(group_aggregates[YEAR==prior_year, COVID_ACADEMIC_IMPACT_SGP_DIFF, CONTENT_AREA], exclude=NULL)
     # table(group_aggregates[YEAR==current_year, COVID_ACADEMIC_IMPACT_SGP_DIFF, CONTENT_AREA], exclude=NULL)
@@ -247,12 +253,18 @@
                         GES_MEDIAN_SGP < -0.5 & GES_MEDIAN_SGP >= -0.8, "Large",
                         GES_MEDIAN_SGP < -0.8, "Severe")]
 
+    group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP :=
+                        factor(COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP, levels=c("Improvement", "Modest to None", "Moderate", "Large", "Severe"), ordered=TRUE)]
+
     group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ := fcase(
                         GES_MEDIAN_SGP_ADJUSTED >= 0.2, "Improvement",
                         GES_MEDIAN_SGP_ADJUSTED <  0.2 & GES_MEDIAN_SGP_ADJUSTED >= -0.2, "Modest to None",
                         GES_MEDIAN_SGP_ADJUSTED < -0.2 & GES_MEDIAN_SGP_ADJUSTED >= -0.5, "Moderate",
                         GES_MEDIAN_SGP_ADJUSTED < -0.5 & GES_MEDIAN_SGP_ADJUSTED >= -0.8, "Large",
                         GES_MEDIAN_SGP_ADJUSTED < -0.8, "Severe")]
+
+    group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ :=
+                        factor(COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ, levels=c("Improvement", "Modest to None", "Moderate", "Large", "Severe"), ordered=TRUE)]
 
     # table(group_aggregates[YEAR==prior_year, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP, CONTENT_AREA], exclude=NULL)
     # table(group_aggregates[YEAR==current_year, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP, CONTENT_AREA], exclude=NULL)
@@ -372,12 +384,18 @@
                         MSSS_DIFFERENCE_UNCORRECTED < -15 & MSSS_DIFFERENCE_UNCORRECTED >= -25, "Large",
                         MSSS_DIFFERENCE_UNCORRECTED < -25, "Severe")]
 
+    group_aggregates[, COVID_ACADEMIC_IMPACT_SSS_DIFF :=
+                        factor(COVID_ACADEMIC_IMPACT_SSS_DIFF, levels=c("Improvement", "Modest to None", "Moderate", "Large", "Severe"), ordered=TRUE)]
+
     group_aggregates[, COVID_ACADEMIC_IMPACT_SSS_DIFF_ADJ := fcase(
                         MSSS_DIFFERENCE_ADJUSTED >= 5, "Improvement",
                         MSSS_DIFFERENCE_ADJUSTED < 5 & MSSS_DIFFERENCE_ADJUSTED >= -5, "Modest to None",
                         MSSS_DIFFERENCE_ADJUSTED < -5 & MSSS_DIFFERENCE_ADJUSTED >= -15, "Moderate",
                         MSSS_DIFFERENCE_ADJUSTED < -15 & MSSS_DIFFERENCE_ADJUSTED >= -25, "Large",
                         MSSS_DIFFERENCE_ADJUSTED < -25, "Severe")]
+
+    group_aggregates[, COVID_ACADEMIC_IMPACT_SSS_DIFF_ADJ :=
+                        factor(COVID_ACADEMIC_IMPACT_SSS_DIFF_ADJ, levels=c("Improvement", "Modest to None", "Moderate", "Large", "Severe"), ordered=TRUE)]
 
     ##    Create COVID Impact Levels for G.E.S. for 2021 - 2019 Median SGP differences
     group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS := fcase(
@@ -387,12 +405,18 @@
                         GES_MEDIAN_SSS < -0.5 & GES_MEDIAN_SSS >= -0.8, "Large",
                         GES_MEDIAN_SSS < -0.8, "Severe")]
 
+    group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS :=
+                        factor(COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS, levels=c("Improvement", "Modest to None", "Moderate", "Large", "Severe"), ordered=TRUE)]
+
     group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS_ADJ := fcase(
                         GES_MEDIAN_SSS_ADJUSTED >= 0.2, "Improvement",
                         GES_MEDIAN_SSS_ADJUSTED <  0.2 & GES_MEDIAN_SSS_ADJUSTED >= -0.2, "Modest to None",
                         GES_MEDIAN_SSS_ADJUSTED < -0.2 & GES_MEDIAN_SSS_ADJUSTED >= -0.5, "Moderate",
                         GES_MEDIAN_SSS_ADJUSTED < -0.5 & GES_MEDIAN_SSS_ADJUSTED >= -0.8, "Large",
                         GES_MEDIAN_SSS_ADJUSTED < -0.8, "Severe")]
+
+    group_aggregates[, COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS_ADJ :=
+                        factor(COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS_ADJ, levels=c("Improvement", "Modest to None", "Moderate", "Large", "Severe"), ordered=TRUE)]
 
     tmp.list <- list(TEMP=group_aggregates)
     names(tmp.list) <- paste(aggregation_group, collapse="_by_")

@@ -27,6 +27,7 @@
     if (SGP::is.SGP(sgp_data)) sgp_data <- sgp_data@Data
     if (!"data.table" %in% class(sgp_data)) stop("Please Provide either and SGP object or LONG data")
     setkey(sgp_data, VALID_CASE, CONTENT_AREA, YEAR, ID)
+    sgp_data <- sgp_data["VALID_CASE"]
 
     ### Utility functions
     hdmedian <- function(x, ...) as.numeric(Hmisc::hdquantile(x, probs=0.5, names=FALSE, ...))
@@ -48,6 +49,15 @@
       (x - mean(y, na.rm = rm.na)) / sd(y, na.rm = rm.na)
     }
 
+    scorePercentile <- function(data_table, var.to.percentile, reference.year = NULL, rm.na = TRUE) {
+        if (is.null(reference.year)) {
+            tmp.percentile.cuts <- quantile(data_table[[var.to.percentile]], probs=seq(0.005, 0.995, length=100), na.rm = rm.na)
+        } else {
+            tmp.percentile.cuts <- quantile(data_table[YEAR==reference.year][[var.to.percentile]], probs=seq(0.005, 0.995, length=100), na.rm = rm.na)
+        }
+        findInterval(data_table[[var.to.percentile]], tmp.percentile.cuts, rightmost.close=TRUE)
+    }
+
     ### Calculate parameters from data if not provided
     if (is.null(current_year)) current_year <- tail(sort(unique(sgp_data[['YEAR']])), 1)
     if (is.null(prior_year)) prior_year <- tail(sort(unique(sgp_data[['YEAR']])), 2)[-2]
@@ -56,18 +66,23 @@
     if (is.null(sgp_grades)) sgp_grades <- sort(unique(sgp_data[!is.na(SGP_BASELINE), GRADE]))
     year_gap <- tail(as.numeric(unlist(strsplit(current_year, split="_"))) - as.numeric(unlist(strsplit(prior_year, split="_"))), 1)
 
-    ### Prepare data and add additional variables
-    sgp_data <- sgp_data[VALID_CASE == "VALID_CASE"]
+    ### Trim down sgp_data
+    sgp_data <- sgp_data[GRADE %in% all_grades & CONTENT_AREA %in% content_areas]
 
     ##    Standardize SCALE_SCORE by CONTENT_AREA and GRADE using 2019 norms
     if (!"SCALE_SCORE_STANDARDIZED" %in% names(sgp_data)) {
-      sgp_data[, SCALE_SCORE_STANDARDIZED := Z(.SD, "SCALE_SCORE", reference.year = prior_year), by = list(CONTENT_AREA, GRADE), .SDcols = c("YEAR", "CONTENT_AREA", "GRADE", "SCALE_SCORE")]
+        sgp_data[, SCALE_SCORE_STANDARDIZED := Z(.SD, "SCALE_SCORE", reference.year = prior_year), by = list(CONTENT_AREA, GRADE), .SDcols = c("YEAR", "CONTENT_AREA", "GRADE", "SCALE_SCORE")]
+    }
+    if (!"SCALE_SCORE_PERCENTILE" %in% names(sgp_data)) {
+        sgp_data[, SCALE_SCORE_PERCENTILE := scorePercentile(.SD, "SCALE_SCORE", reference.year = prior_year), by = list(CONTENT_AREA, GRADE), .SDcols=c("YEAR", "CONTENT_AREA", "GRADE", "SCALE_SCORE")]
     }
 
     ### Create `aggregation_group` Level Summary Table(s)
     grp_status <- sgp_data[
                     VALID_CASE=="VALID_CASE" & GRADE %in% all_grades, .(
                       MEAN_SCALE_SCORE_STANDARDIZED = mean(SCALE_SCORE_STANDARDIZED, na.rm=TRUE),
+                      MEAN_SCALE_SCORE_PERCENTILE = mean(SCALE_SCORE_PERCENTILE, na.rm=TRUE),
+                      MEDIAN_SCALE_SCORE_PERCENTILE = median(as.numeric(SCALE_SCORE_PERCENTILE), na.rm=TRUE),
                       PERCENT_PROFICIENT=percent_proficient(ACHIEVEMENT_LEVEL),
                       COUNT_SCALE_SCORE=sum(!is.na(SCALE_SCORE_STANDARDIZED))),
                     keyby=c("YEAR", aggregation_group, "CONTENT_AREA")]

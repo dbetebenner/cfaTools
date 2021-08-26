@@ -527,12 +527,12 @@
                         factor(COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSP_ADJ, levels=c("Improvement", "Modest to None", "Moderate", "Large", "Severe"), ordered=TRUE)]
 
     ###   Save RTM Models as `attributes` meta-data
-    setattr(group_aggregates, "msgp_rtm_models", msgp_rtm_models)
-    setattr(group_aggregates, "gessgp_rtm_models", gessgp_rtm_models)
-    setattr(group_aggregates, "msss_rtm_models", msss_rtm_models)
-    setattr(group_aggregates, "gesss_rtm_models", gesss_rtm_models)
-    setattr(group_aggregates, "mssp_rtm_models", mssp_rtm_models)
-    setattr(group_aggregates, "gessp_rtm_models", gessp_rtm_models)
+    setattr(group_aggregates, "msgp_rtm_models", lapply(msgp_rtm_models, summary))
+    setattr(group_aggregates, "gessgp_rtm_models", lapply(gessgp_rtm_models, summary))
+    setattr(group_aggregates, "msss_rtm_models", lapply(msss_rtm_models, summary))
+    setattr(group_aggregates, "gesss_rtm_models", lapply(gesss_rtm_models, summary))
+    setattr(group_aggregates, "mssp_rtm_models", lapply(mssp_rtm_models, summary))
+    setattr(group_aggregates, "gessp_rtm_models", lapply(gessp_rtm_models, summary))
 
     tmp.list <- list(TEMP=group_aggregates)
     names(tmp.list) <- paste(aggregation_group, collapse="_by_")

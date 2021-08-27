@@ -201,19 +201,19 @@
 
     ges_data <- copy(sgp_data)
     ges_data[YEAR < prior_year, SGP_BASELINE := SGP]
-    ges_sgp_prior <- ges_data[,
+    ges_sgp_prior <- ges_data[GRADE %in% sgp_grades,
             as.list(gammaEffectSizeLong(.SD, "SGP_BASELINE", SGP:::yearIncrement(prior_year, -2), prior_year, quantiles=c(0.5), digits=2)),
           keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := prior_year]
 
     ##    Now replace 2019 BASELINEs with COHORT (only for BASELINES that were present originally)
     ges_data[YEAR == prior_year, SGP_BASELINE := SGP]
-    ges_sgp_crnt <- ges_data[,
+    ges_sgp_crnt <- ges_data[GRADE %in% sgp_grades,
             as.list(gammaEffectSizeLong(.SD, "SGP_BASELINE", prior_year, current_year, quantiles=c(0.5), digits=2)),
           keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]
 
     ges_sgp <- rbindlist(list(ges_sgp_prior, ges_sgp_crnt)); rm(ges_data)
 
-    setnames(ges_sgp, "Q_50", "GES_MEDIAN_SGP")
+    setnames(ges_sgp, c("Q_50", "V1"), rep("GES_MEDIAN_SGP", 2), skip_absent=TRUE) # Edge cases where first result is NA causes returned var to be named `V1`
     setkeyv(ges_sgp, c(aggregation_group, "YEAR", "CONTENT_AREA"))
     setkeyv(group_aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
 
@@ -350,7 +350,7 @@
             as.list(gammaEffectSizeLong(.SD, "SCALE_SCORE_STANDARDIZED", prior_year, current_year, quantiles=c(0.5), digits=2)),
           keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]))
 
-    setnames(ges_sss, "Q_50", "GES_MEDIAN_SSS")
+    setnames(ges_sss, c("Q_50", "V1"), rep("GES_MEDIAN_SSS", 2), skip_absent=TRUE)
     setkeyv(ges_sss, c(aggregation_group, "YEAR", "CONTENT_AREA"))
     setkeyv(group_aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
 
@@ -392,7 +392,7 @@
             as.list(gammaEffectSizeLong(.SD, "SCALE_SCORE_PERCENTILE", prior_year, current_year, quantiles=c(0.5), digits=2)),
           keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]))
 
-    setnames(ges_ssp, "Q_50", "GES_MEDIAN_SSP")
+    setnames(ges_ssp, c("Q_50", "V1"), rep("GES_MEDIAN_SSP", 2), skip_absent=TRUE)
     setkeyv(ges_ssp, c(aggregation_group, "YEAR", "CONTENT_AREA"))
     setkeyv(group_aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
 

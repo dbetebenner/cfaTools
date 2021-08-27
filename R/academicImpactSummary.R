@@ -350,7 +350,7 @@
             as.list(gammaEffectSizeLong(.SD, "SCALE_SCORE_STANDARDIZED", prior_year, current_year, quantiles=c(0.5), digits=2)),
           keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]))
 
-    setnames(ges_sgp, c("Q_50", "V1"), rep("GES_MEDIAN_SGP", 2), skip_absent=TRUE)
+    setnames(ges_sss, c("Q_50", "V1"), rep("GES_MEDIAN_SSS", 2), skip_absent=TRUE)
     setkeyv(ges_sss, c(aggregation_group, "YEAR", "CONTENT_AREA"))
     setkeyv(group_aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
 

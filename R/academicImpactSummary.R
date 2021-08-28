@@ -18,10 +18,10 @@
     SCALE_SCORE_PRIOR_STANDARDIZED <- SCALE_SCORE_PRIOR_STANDARDIZED_2YEAR <- SCALE_SCORE_STANDARDIZED <- SGP <- SGP_BASELINE <- VALID_CASE <- YEAR <- NULL
 
     ### Create state (if NULL) from sgp_object (if possible)
-	if (is.null(state)) {
-		tmp.name <- toupper(gsub("_", " ", deparse(substitute(sgp_data))))
-		state <- SGP::getStateAbbreviation(tmp.name)
-	}
+  	if (is.null(state)) {
+  		tmp.name <- toupper(gsub("_", " ", deparse(substitute(sgp_data))))
+  		state <- SGP::getStateAbbreviation(tmp.name)
+  	}
 
     ### Create sgp_data data set
     if (SGP::is.SGP(sgp_data)) sgp_data <- sgp_data@Data
@@ -55,7 +55,9 @@
         } else {
             tmp.percentile.cuts <- quantile(data_table[YEAR==reference.year][[var.to.percentile]], probs=seq(0.005, 0.995, length=100), na.rm = rm.na)
         }
-        findInterval(data_table[[var.to.percentile]], tmp.percentile.cuts, rightmost.close=TRUE)
+        if (!all(is.na(tmp.percentile.cuts))) {
+          findInterval(data_table[[var.to.percentile]], tmp.percentile.cuts, rightmost.close=TRUE)
+        } else rep(as.integer(NA), length(data_table[[var.to.percentile]]))
     }
 
     ### Calculate parameters from data if not provided

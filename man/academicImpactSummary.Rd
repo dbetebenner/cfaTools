@@ -12,7 +12,8 @@ academicImpactSummary(
 	content_areas=NULL,
 	all_grades=NULL,
 	sgp_grades=NULL,
-	aggregation_group="SCHOOL_NUMBER")
+	aggregation_group="SCHOOL_NUMBER",
+	years_for_aggregates=NULL)
 }
 
 \arguments{
@@ -31,6 +32,8 @@ academicImpactSummary(
   \item{sgp_grades}{Grades within the designated content areas to calculate academic GROWTH impact.
   }
   \item{aggregation_group}{Character string indicating groups to aggregate by and create impact summaries for.
+  }
+  \item{years_for_aggregates}{One or both of prior_year and current_year to create aggregates for. Defaults is NULL which gets turned into both prior_year and current_year.
   }
 }
 

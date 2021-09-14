@@ -6,7 +6,8 @@
     content_areas=NULL,
     all_grades=NULL,
     sgp_grades=NULL,
-    aggregation_group="SCHOOL_NUMBER") {
+    aggregation_group="SCHOOL_NUMBER",
+    years_for_aggregates=NULL) {
 
     ACHIEVEMENT_LEVEL <- ACHIEVEMENT_LEVEL_PRIOR_2YEAR <- CONTENT_AREA <- COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP <- NULL
     COVID_ACADEMIC_IMPACT_GES_MEDIAN_SGP_ADJ <- COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS <- COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSS_ADJ <- NULL
@@ -27,7 +28,8 @@
     if (SGP::is.SGP(sgp_data)) sgp_data <- sgp_data@Data
     if (!"data.table" %in% class(sgp_data)) stop("Please Provide either and SGP object or LONG data")
     setkey(sgp_data, VALID_CASE, CONTENT_AREA, YEAR, ID)
-    sgp_data <- sgp_data["VALID_CASE"]
+    sgp_data <- na.omit(sgp_data["VALID_CASE"], aggregation_group)
+
 
     ### Utility functions
     hdmedian <- function(x, ...) as.numeric(Hmisc::hdquantile(x, probs=0.5, names=FALSE, ...))
@@ -64,6 +66,8 @@
     if (is.null(content_areas)) content_areas <- unique(sgp_data[['CONTENT_AREA']])
     if (is.null(all_grades)) all_grades <- sort(unique(sgp_data[['GRADE']]))
     if (is.null(sgp_grades)) sgp_grades <- sort(unique(sgp_data[!is.na(SGP_BASELINE), GRADE]))
+    if (is.null(years_for_aggregates)) years_for_aggregates <- c(prior_year, current_year)
+    if (length(intersect(years_for_aggregates, c(prior_year, current_year)))==0) stop("Argument years_for_aggregates must be one/both of prior_year and/or current_year")
     year_gap <- tail(as.numeric(unlist(strsplit(current_year, split="_"))) - as.numeric(unlist(strsplit(prior_year, split="_"))), 1)
 
     ### Trim down sgp_data
@@ -121,7 +125,7 @@
       group_aggregates[YEAR == current_year, PERCENT_PROFICIENT_PRIOR_2YEAR := PERCENT_PROFICIENT_PRIOR]
       group_aggregates[YEAR == current_year, PERCENT_PROFICIENT_PRIOR := NA]
     }
-    group_aggregates <- group_aggregates[YEAR %in% c(prior_year, current_year)]
+    group_aggregates <- group_aggregates[YEAR %in% years_for_aggregates]
 
     ###   Create CENTERED prior 2 year prior variables
     group_aggregates[, PRIOR_MSSS_CENTERED_2YEAR := MEAN_SCALE_SCORE_PRIOR_2YEAR_STANDARDIZED - mean(MEAN_SCALE_SCORE_PRIOR_2YEAR_STANDARDIZED, na.rm=TRUE), by = list(YEAR, CONTENT_AREA)]

@@ -27,7 +27,7 @@ To install the latest stable release of **cfaTools** from [CRAN](https://CRAN.R-
 To install the development release of **cfaTools** from [GitHub](https://github.com/CenterForAssessment/cfaTools/):
 
 ```R
-> devtools::install_github("CenterForAssessment/cfaTools")
+> remotes::install_github("centerforassessment/cfaTools")
 ```
 
 

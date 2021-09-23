@@ -109,16 +109,16 @@
     setkeyv(group_aggregates, shift.key)
 
     group_aggregates[, c("MEDIAN_SGP_PRIOR_1YEAR", "MEDIAN_SGP_PRIOR_2YEAR") := shift(MEDIAN_SGP, 1:2), by = c(eval(aggregation_group), "CONTENT_AREA")]
-    group_aggregates[, MEDIAN_SGP_BASELINE_PRIOR := shift(MEDIAN_SGP_BASELINE, 1), by = c(eval(aggregation_group), "CONTENT_AREA")] # Only getting this for 2021 (1 year shift = 2 years)
+    group_aggregates[, MEDIAN_SGP_BASELINE_PRIOR_2YEAR := shift(MEDIAN_SGP_BASELINE, 1), by = c(eval(aggregation_group), "CONTENT_AREA")] # Only getting this for 2021 (1 year shift = 2 years)
     group_aggregates[, c("MEAN_SCALE_SCORE_PRIOR_STANDARDIZED", "MEAN_SCALE_SCORE_PRIOR_2YEAR_STANDARDIZED") := shift(MEAN_SCALE_SCORE_STANDARDIZED, 1:2), by = c(eval(aggregation_group), "CONTENT_AREA")]
     group_aggregates[, c("MEAN_SCALE_SCORE_PRIOR_PERCENTILE", "MEAN_SCALE_SCORE_PRIOR_2YEAR_PERCENTILE") := shift(MEAN_SCALE_SCORE_PERCENTILE, 1:2), by = c(eval(aggregation_group), "CONTENT_AREA")]
     group_aggregates[, c("PERCENT_PROFICIENT_PRIOR", "PERCENT_PROFICIENT_PRIOR_2YEAR") := shift(PERCENT_PROFICIENT, 1:2), by = c(eval(aggregation_group), "CONTENT_AREA")]
 
     # table(group_aggregates[, YEAR, is.na(MEDIAN_SGP_PRIOR_2YEAR)])
-    # table(group_aggregates[, YEAR, is.na(MEDIAN_SGP_BASELINE_PRIOR)])
+    # table(group_aggregates[, YEAR, is.na(MEDIAN_SGP_BASELINE_PRIOR_2YEAR)])
 
     if (year_gap!=1) {
-      group_aggregates[YEAR == current_year, MEDIAN_SGP_PRIOR_2YEAR := MEDIAN_SGP_BASELINE_PRIOR] # Using only BASELINE to BASELINE for 2021
+      # group_aggregates[YEAR == current_year, MEDIAN_SGP_PRIOR_2YEAR := MEDIAN_SGP_BASELINE_PRIOR_2YEAR] # Using only BASELINE to BASELINE for 2021
       group_aggregates[YEAR == current_year, MEDIAN_SGP_PRIOR_2YEAR := MEDIAN_SGP_PRIOR_1YEAR]
       group_aggregates[YEAR == current_year, MEDIAN_SGP_PRIOR_1YEAR := NA]
       group_aggregates[YEAR == current_year, MEAN_SCALE_SCORE_PRIOR_2YEAR_STANDARDIZED := MEAN_SCALE_SCORE_PRIOR_STANDARDIZED]

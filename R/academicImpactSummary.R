@@ -19,10 +19,10 @@
     SCALE_SCORE_PRIOR_STANDARDIZED <- SCALE_SCORE_PRIOR_STANDARDIZED_2YEAR <- SCALE_SCORE_STANDARDIZED <- SGP <- SGP_BASELINE <- VALID_CASE <- YEAR <- NULL
 
     ### Create state (if NULL) from sgp_object (if possible)
-	if (is.null(state)) {
-		tmp.name <- toupper(gsub("_", " ", deparse(substitute(sgp_data))))
-		state <- SGP::getStateAbbreviation(tmp.name)
-	}
+  	if (is.null(state)) {
+  		tmp.name <- toupper(gsub("_", " ", deparse(substitute(sgp_data))))
+  		state <- SGP::getStateAbbreviation(tmp.name)
+  	}
 
     ### Create sgp_data data set
     if (SGP::is.SGP(sgp_data)) sgp_data <- sgp_data@Data
@@ -57,7 +57,9 @@
         } else {
             tmp.percentile.cuts <- quantile(data_table[YEAR==reference.year][[var.to.percentile]], probs=seq(0.005, 0.995, length=100), na.rm = rm.na)
         }
-        findInterval(data_table[[var.to.percentile]], tmp.percentile.cuts, rightmost.close=TRUE)
+        if (!all(is.na(tmp.percentile.cuts))) {
+          findInterval(data_table[[var.to.percentile]], tmp.percentile.cuts, rightmost.close=TRUE)
+        } else rep(as.integer(NA), length(data_table[[var.to.percentile]]))
     }
 
     ### Calculate parameters from data if not provided
@@ -107,7 +109,7 @@
     setkeyv(group_aggregates, shift.key)
 
     group_aggregates[, c("MEDIAN_SGP_PRIOR_1YEAR", "MEDIAN_SGP_PRIOR_2YEAR") := shift(MEDIAN_SGP, 1:2), by = c(eval(aggregation_group), "CONTENT_AREA")]
-    # group_aggregates[, MEDIAN_SGP_BASELINE_PRIOR := shift(MEDIAN_SGP_BASELINE, 1), by = c(eval(aggregation_group), "CONTENT_AREA")] # Only getting this for 2021 (1 year shift = 2 years)
+    group_aggregates[, MEDIAN_SGP_BASELINE_PRIOR := shift(MEDIAN_SGP_BASELINE, 1), by = c(eval(aggregation_group), "CONTENT_AREA")] # Only getting this for 2021 (1 year shift = 2 years)
     group_aggregates[, c("MEAN_SCALE_SCORE_PRIOR_STANDARDIZED", "MEAN_SCALE_SCORE_PRIOR_2YEAR_STANDARDIZED") := shift(MEAN_SCALE_SCORE_STANDARDIZED, 1:2), by = c(eval(aggregation_group), "CONTENT_AREA")]
     group_aggregates[, c("MEAN_SCALE_SCORE_PRIOR_PERCENTILE", "MEAN_SCALE_SCORE_PRIOR_2YEAR_PERCENTILE") := shift(MEAN_SCALE_SCORE_PERCENTILE, 1:2), by = c(eval(aggregation_group), "CONTENT_AREA")]
     group_aggregates[, c("PERCENT_PROFICIENT_PRIOR", "PERCENT_PROFICIENT_PRIOR_2YEAR") := shift(PERCENT_PROFICIENT, 1:2), by = c(eval(aggregation_group), "CONTENT_AREA")]
@@ -116,7 +118,7 @@
     # table(group_aggregates[, YEAR, is.na(MEDIAN_SGP_BASELINE_PRIOR)])
 
     if (year_gap!=1) {
-      # group_aggregates[YEAR == current_year, MEDIAN_SGP_PRIOR_2YEAR := MEDIAN_SGP_BASELINE_PRIOR] # Using only BASELINE to BASELINE for 2021
+      group_aggregates[YEAR == current_year, MEDIAN_SGP_PRIOR_2YEAR := MEDIAN_SGP_BASELINE_PRIOR] # Using only BASELINE to BASELINE for 2021
       group_aggregates[YEAR == current_year, MEDIAN_SGP_PRIOR_2YEAR := MEDIAN_SGP_PRIOR_1YEAR]
       group_aggregates[YEAR == current_year, MEDIAN_SGP_PRIOR_1YEAR := NA]
       group_aggregates[YEAR == current_year, MEAN_SCALE_SCORE_PRIOR_2YEAR_STANDARDIZED := MEAN_SCALE_SCORE_PRIOR_STANDARDIZED]
@@ -205,19 +207,19 @@
 
     ges_data <- copy(sgp_data)
     ges_data[YEAR < prior_year, SGP_BASELINE := SGP]
-    ges_sgp_prior <- ges_data[,
+    ges_sgp_prior <- ges_data[GRADE %in% sgp_grades,
             as.list(gammaEffectSizeLong(.SD, "SGP_BASELINE", SGP:::yearIncrement(prior_year, -2), prior_year, quantiles=c(0.5), digits=2)),
           keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := prior_year]
 
     ##    Now replace 2019 BASELINEs with COHORT (only for BASELINES that were present originally)
     ges_data[YEAR == prior_year, SGP_BASELINE := SGP]
-    ges_sgp_crnt <- ges_data[,
+    ges_sgp_crnt <- ges_data[GRADE %in% sgp_grades,
             as.list(gammaEffectSizeLong(.SD, "SGP_BASELINE", prior_year, current_year, quantiles=c(0.5), digits=2)),
           keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]
 
     ges_sgp <- rbindlist(list(ges_sgp_prior, ges_sgp_crnt)); rm(ges_data)
 
-    setnames(ges_sgp, "Q_50", "GES_MEDIAN_SGP")
+    setnames(ges_sgp, c("Q_50", "V1"), rep("GES_MEDIAN_SGP", 2), skip_absent=TRUE) # Edge cases where first result is NA causes returned var to be named `V1`
     setkeyv(ges_sgp, c(aggregation_group, "YEAR", "CONTENT_AREA"))
     setkeyv(group_aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
 
@@ -354,7 +356,7 @@
             as.list(gammaEffectSizeLong(.SD, "SCALE_SCORE_STANDARDIZED", prior_year, current_year, quantiles=c(0.5), digits=2)),
           keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]))
 
-    setnames(ges_sss, "Q_50", "GES_MEDIAN_SSS")
+    setnames(ges_sss, c("Q_50", "V1"), rep("GES_MEDIAN_SSS", 2), skip_absent=TRUE)
     setkeyv(ges_sss, c(aggregation_group, "YEAR", "CONTENT_AREA"))
     setkeyv(group_aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
 
@@ -396,7 +398,7 @@
             as.list(gammaEffectSizeLong(.SD, "SCALE_SCORE_PERCENTILE", prior_year, current_year, quantiles=c(0.5), digits=2)),
           keyby=c("CONTENT_AREA", aggregation_group)][, YEAR := current_year]))
 
-    setnames(ges_ssp, "Q_50", "GES_MEDIAN_SSP")
+    setnames(ges_ssp, c("Q_50", "V1"), rep("GES_MEDIAN_SSP", 2), skip_absent=TRUE)
     setkeyv(ges_ssp, c(aggregation_group, "YEAR", "CONTENT_AREA"))
     setkeyv(group_aggregates, c(aggregation_group, "YEAR", "CONTENT_AREA"))
 

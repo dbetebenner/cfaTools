@@ -28,7 +28,7 @@
     if (SGP::is.SGP(sgp_data)) sgp_data <- sgp_data@Data
     if (!"data.table" %in% class(sgp_data)) stop("Please Provide either and SGP object or LONG data")
     setkey(sgp_data, VALID_CASE, CONTENT_AREA, YEAR, ID)
-    sgp_data <- na.omit(sgp_data["VALID_CASE"], aggregation_group)
+    if (!is.null(aggregation_group)) sgp_data <- na.omit(sgp_data["VALID_CASE"], aggregation_group) else sgp_data <- sgp_data["VALID_CASE"]
 
 
     ### Utility functions
@@ -541,6 +541,10 @@
     setattr(group_aggregates, "gessp_rtm_models", lapply(gessp_rtm_models, summary))
 
     tmp.list <- list(TEMP=group_aggregates)
-    names(tmp.list) <- paste(aggregation_group, collapse="_by_")
+    if (is.null(aggregation_group)) {
+        names(tmp.list) <- "STATE"
+    } else {
+        names(tmp.list) <- paste(aggregation_group, collapse="_by_")
+    }
     return(tmp.list)
 } ### END academicImpactSummary

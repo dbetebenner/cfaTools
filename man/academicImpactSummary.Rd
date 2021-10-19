@@ -13,7 +13,8 @@ academicImpactSummary(
 	all_grades=NULL,
 	sgp_grades=NULL,
 	aggregation_group="SCHOOL_NUMBER",
-	years_for_aggregates=NULL)
+	years_for_aggregates=NULL,
+	rtm_adjustment=TRUE)
 }
 
 \arguments{
@@ -33,7 +34,9 @@ academicImpactSummary(
   }
   \item{aggregation_group}{Character string indicating groups to aggregate by and create impact summaries for.
   }
-  \item{years_for_aggregates}{One or both of prior_year and current_year to create aggregates for. Defaults is NULL which gets turned into both prior_year and current_year.
+	\item{years_for_aggregates}{One or both of prior_year and current_year to create aggregates for. Defaults is NULL which gets turned into both prior_year and current_year.
+  }
+  \item{rtm_adjustment}{Logical. Should the regression to the mean adjustments be calculated.
   }
 }
 

@@ -106,6 +106,11 @@
 
     group_aggregates <- grp_growth[grp_status]
 
+    ###   Expand `group_aggregates` to get all combinations of aggregate levels/rows
+    ##    https://stackoverflow.com/questions/43483497/data-table-equivalent-of-tidyrcomplete
+    tmp.grp.vars <- c("YEAR", aggregation_group, "CONTENT_AREA")
+    group_aggregates <- group_aggregates[do.call(CJ, c(mget(tmp.grp.vars), unique=TRUE)), on=tmp.grp.vars]
+
     ###   Create LAGGED growth and status variables
     shift.key <- c(aggregation_group, "CONTENT_AREA", "YEAR")
     setkeyv(group_aggregates, shift.key)

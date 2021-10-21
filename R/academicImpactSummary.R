@@ -30,7 +30,7 @@
     if (SGP::is.SGP(sgp_data)) sgp_data <- sgp_data@Data
     if (!"data.table" %in% class(sgp_data)) stop("Please Provide either and SGP object or LONG data")
     setkey(sgp_data, VALID_CASE, CONTENT_AREA, YEAR, ID)
-    sgp_data <- na.omit(sgp_data["VALID_CASE"], aggregation_group)
+    if (!is.null(aggregation_group)) sgp_data <- na.omit(sgp_data["VALID_CASE"], aggregation_group) else sgp_data <- sgp_data["VALID_CASE"]
 
 
     ### Utility functions
@@ -154,10 +154,14 @@
     if (rtm_adjustment) {
     ###   RTM Adjusted MSGP_BASELINE_DIFFERENCE
     msgp_rtm_models <- list()
-    for (CA in content_areas) {
-      msgp_rtm_models[[CA]] <- MASS::rlm(MSGP_BASELINE_DIFFERENCE_UNCORRECTED ~ 0 + PRIOR_MSGP_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
-    }
 
+    for (CA in content_areas) {
+        if (!is.null(aggregation_group)) {
+            msgp_rtm_models[[CA]] <- MASS::rlm(MSGP_BASELINE_DIFFERENCE_UNCORRECTED ~ 0 + PRIOR_MSGP_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+        } else {
+            msgp_rtm_models[[CA]][["coef"]][["PRIOR_MSGP_CENTERED_2YEAR"]] <- 0
+        }
+    }
     ##    Model diagnostics
     # par(mfrow = c(2, 2))
     # for (CA in content_areas) {
@@ -240,9 +244,12 @@
     ###   RTM Adjusted G.E.S.
     gessgp_rtm_models <- list()
     for (CA in content_areas) {
-      gessgp_rtm_models[[CA]] <- MASS::rlm(GES_MEDIAN_SGP ~ 0 + PRIOR_MSGP_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+        if (!is.null(aggregation_group)) {
+            gessgp_rtm_models[[CA]] <- MASS::rlm(GES_MEDIAN_SGP ~ 0 + PRIOR_MSGP_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+        } else {
+            gessgp_rtm_models[[CA]][["coef"]][["PRIOR_MSGP_CENTERED_2YEAR"]] <- 0
+        }
     }
-
     ##    Model diagnostics
     # par(mfrow = c(2, 2))
     # for (CA in content_areas) {
@@ -321,11 +328,20 @@
     if (rtm_adjustment) {
     ###   RTM Adjusted MSSS_DIFFERENCE
     msss_rtm_models <- mssp_rtm_models <- list()
+
     for (CA in content_areas) {
-      msss_rtm_models[[CA]] <- MASS::rlm(MSSS_DIFFERENCE_UNCORRECTED ~ 0 + PRIOR_MSSS_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+        if (!is.null(aggregation_group)) {
+            msss_rtm_models[[CA]] <- MASS::rlm(MSSS_DIFFERENCE_UNCORRECTED ~ 0 + PRIOR_MSSS_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+        } else {
+            msss_rtm_models[[CA]][["coef"]][["PRIOR_MSSS_CENTERED_2YEAR"]] <- 0
+        }
     }
     for (CA in content_areas) {
-      mssp_rtm_models[[CA]] <- MASS::rlm(MSSP_DIFFERENCE_UNCORRECTED ~ 0 + PRIOR_MSSP_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+        if (!is.null(aggregation_group)) {
+            mssp_rtm_models[[CA]] <- MASS::rlm(MSSP_DIFFERENCE_UNCORRECTED ~ 0 + PRIOR_MSSP_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+        } else {
+            mssp_rtm_models[[CA]][["coef"]][["PRIOR_MSSP_CENTERED_2YEAR"]] <- 0
+        }
     }
 
     ##    Model diagnostics
@@ -381,7 +397,11 @@
     ###   RTM Adjusted G.E.S.
     gesss_rtm_models <- list()
     for (CA in content_areas) {
-      gesss_rtm_models[[CA]] <- MASS::rlm(GES_MEDIAN_SSS ~ 0 + PRIOR_MSSS_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+        if (!is.null(aggregation_group)) {
+            gesss_rtm_models[[CA]] <- MASS::rlm(GES_MEDIAN_SSS ~ 0 + PRIOR_MSSS_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+        } else {
+            gesss_rtm_models[[CA]][["coef"]][["PRIOR_MSSS_CENTERED_2YEAR"]] <- 0
+        }
     }
 
     ##    Model diagnostics
@@ -423,8 +443,13 @@
     if (rtm_adjustment) {
     ###   RTM Adjusted G.E.S.
     gessp_rtm_models <- list()
+
     for (CA in content_areas) {
-      gessp_rtm_models[[CA]] <- MASS::rlm(GES_MEDIAN_SSP ~ 0 + PRIOR_MSSP_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+        if (!is.null(aggregation_group)) {
+            gessp_rtm_models[[CA]] <- MASS::rlm(GES_MEDIAN_SSP ~ 0 + PRIOR_MSSP_CENTERED_2YEAR, data=group_aggregates[YEAR == prior_year & CONTENT_AREA == CA])
+        } else {
+            gessp_rtm_models[[CA]][["coef"]][["PRIOR_MSSP_CENTERED_2YEAR"]] <- 0
+        }
     }
 
     ##    Model diagnostics

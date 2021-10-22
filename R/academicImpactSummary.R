@@ -18,6 +18,11 @@
     MSGP_BASELINE_DIFFERENCE_ADJUSTED <- MSGP_BASELINE_DIFFERENCE_UNCORRECTED <- MSSS_DIFFERENCE_ADJUSTED <- NULL
     MSSS_DIFFERENCE_UNCORRECTED <- PRIOR_MSGP_CENTERED_2YEAR <- PRIOR_MSSS_CENTERED_2YEAR <- SCALE_SCORE <- NULL
     SCALE_SCORE_PRIOR_STANDARDIZED <- SCALE_SCORE_PRIOR_STANDARDIZED_2YEAR <- SCALE_SCORE_STANDARDIZED <- SGP <- SGP_BASELINE <- VALID_CASE <- YEAR <- NULL
+    COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSP <- COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSP_ADJ <- COVID_ACADEMIC_IMPACT_SSP_DIFF <- NULL
+    COVID_ACADEMIC_IMPACT_SSP_DIFF_ADJ <- GES_MEDIAN_SSP <- GES_MEDIAN_SSP_ADJUSTED <- MEAN_SCALE_SCORE_PERCENTILE <- NULL
+    MEAN_SCALE_SCORE_PRIOR_2YEAR_PERCENTILE <- MEAN_SCALE_SCORE_PRIOR_2YEAR_STANDARDIZED <- MEAN_SCALE_SCORE_PRIOR_PERCENTILE <- NULL
+    MEDIAN_SGP_BASELINE_PRIOR_2YEAR <- MEDIAN_SGP_PRIOR_1YEAR <- MSSP_DIFFERENCE_ADJUSTED <- MSSP_DIFFERENCE_UNCORRECTED <- NULL
+    PERCENT_PROFICIENT <- PERCENT_PROFICIENT_PRIOR <- PERCENT_PROFICIENT_PRIOR_2YEAR <- PRIOR_MSSP_CENTERED_2YEAR <- SCALE_SCORE_PERCENTILE <- NULL
 
     ### Create state (if NULL) from sgp_object (if possible)
   	if (is.null(state)) {
@@ -60,7 +65,7 @@
             tmp.percentile.cuts <- quantile(data_table[YEAR==reference.year][[var.to.percentile]], probs=seq(0.005, 0.995, length=100), na.rm = rm.na)
         }
         if (!all(is.na(tmp.percentile.cuts))) {
-          findInterval(data_table[[var.to.percentile]], tmp.percentile.cuts, rightmost.close=TRUE)
+          findInterval(data_table[[var.to.percentile]], tmp.percentile.cuts, rightmost.closed=TRUE)
         } else rep(as.integer(NA), length(data_table[[var.to.percentile]]))
     }
 
@@ -87,7 +92,7 @@
 
     ### Create `aggregation_group` Level Summary Table(s)
     grp_status <- sgp_data[
-                    VALID_CASE=="VALID_CASE" & GRADE %in% all_grades, .(
+                    VALID_CASE=="VALID_CASE" & GRADE %in% all_grades, list(
                       MEAN_SCALE_SCORE_STANDARDIZED = mean(SCALE_SCORE_STANDARDIZED, na.rm=TRUE),
                       MEAN_SCALE_SCORE_PERCENTILE = mean(SCALE_SCORE_PERCENTILE, na.rm=TRUE),
                       MEDIAN_SCALE_SCORE_PERCENTILE = median(as.numeric(SCALE_SCORE_PERCENTILE), na.rm=TRUE),
@@ -96,7 +101,7 @@
                     keyby=c("YEAR", aggregation_group, "CONTENT_AREA")]
 
     grp_growth <- sgp_data[
-                    VALID_CASE=="VALID_CASE" & GRADE %in% sgp_grades, .(
+                    VALID_CASE=="VALID_CASE" & GRADE %in% sgp_grades, list(
                       MEAN_SGP=mean(SGP, na.rm=TRUE),
                       MEDIAN_SGP=hdmedian(as.numeric(SGP), na.rm=TRUE),
                       MEAN_SGP_BASELINE=mean(SGP_BASELINE, na.rm=TRUE),

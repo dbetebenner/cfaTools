@@ -18,6 +18,11 @@
     MSGP_BASELINE_DIFFERENCE_ADJUSTED <- MSGP_BASELINE_DIFFERENCE_UNCORRECTED <- MSSS_DIFFERENCE_ADJUSTED <- NULL
     MSSS_DIFFERENCE_UNCORRECTED <- PRIOR_MSGP_CENTERED_2YEAR <- PRIOR_MSSS_CENTERED_2YEAR <- SCALE_SCORE <- NULL
     SCALE_SCORE_PRIOR_STANDARDIZED <- SCALE_SCORE_PRIOR_STANDARDIZED_2YEAR <- SCALE_SCORE_STANDARDIZED <- SGP <- SGP_BASELINE <- VALID_CASE <- YEAR <- NULL
+    COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSP <- COVID_ACADEMIC_IMPACT_GES_MEDIAN_SSP_ADJ <- COVID_ACADEMIC_IMPACT_SSP_DIFF <- NULL
+    COVID_ACADEMIC_IMPACT_SSP_DIFF_ADJ <- GES_MEDIAN_SSP <- GES_MEDIAN_SSP_ADJUSTED <- MEAN_SCALE_SCORE_PERCENTILE <- NULL
+    MEAN_SCALE_SCORE_PRIOR_2YEAR_PERCENTILE <- MEAN_SCALE_SCORE_PRIOR_2YEAR_STANDARDIZED <- MEAN_SCALE_SCORE_PRIOR_PERCENTILE <- NULL
+    MEDIAN_SGP_BASELINE_PRIOR_2YEAR <- MEDIAN_SGP_PRIOR_1YEAR <- MSSP_DIFFERENCE_ADJUSTED <- MSSP_DIFFERENCE_UNCORRECTED <- NULL
+    PERCENT_PROFICIENT <- PERCENT_PROFICIENT_PRIOR <- PERCENT_PROFICIENT_PRIOR_2YEAR <- PRIOR_MSSP_CENTERED_2YEAR <- SCALE_SCORE_PERCENTILE <- NULL
 
     ### Create state (if NULL) from sgp_object (if possible)
   	if (is.null(state)) {
@@ -60,7 +65,7 @@
             tmp.percentile.cuts <- quantile(data_table[YEAR==reference.year][[var.to.percentile]], probs=seq(0.005, 0.995, length=100), na.rm = rm.na)
         }
         if (!all(is.na(tmp.percentile.cuts))) {
-          findInterval(data_table[[var.to.percentile]], tmp.percentile.cuts, rightmost.close=TRUE)
+          findInterval(data_table[[var.to.percentile]], tmp.percentile.cuts, rightmost.closed=TRUE)
         } else rep(as.integer(NA), length(data_table[[var.to.percentile]]))
     }
 
@@ -87,24 +92,29 @@
 
     ### Create `aggregation_group` Level Summary Table(s)
     grp_status <- sgp_data[
-                    VALID_CASE=="VALID_CASE" & GRADE %in% all_grades, .(
+                    VALID_CASE=="VALID_CASE" & GRADE %in% all_grades, list(
                       MEAN_SCALE_SCORE_STANDARDIZED = mean(SCALE_SCORE_STANDARDIZED, na.rm=TRUE),
                       MEAN_SCALE_SCORE_PERCENTILE = mean(SCALE_SCORE_PERCENTILE, na.rm=TRUE),
-                      MEDIAN_SCALE_SCORE_PERCENTILE = median(as.numeric(SCALE_SCORE_PERCENTILE), na.rm=TRUE),
+                      MEDIAN_SCALE_SCORE_PERCENTILE = round(hdmedian(as.numeric(SCALE_SCORE_PERCENTILE), na.rm=TRUE), 1),
                       PERCENT_PROFICIENT=percent_proficient(ACHIEVEMENT_LEVEL),
                       COUNT_SCALE_SCORE=sum(!is.na(SCALE_SCORE_STANDARDIZED))),
                     keyby=c("YEAR", aggregation_group, "CONTENT_AREA")]
 
     grp_growth <- sgp_data[
-                    VALID_CASE=="VALID_CASE" & GRADE %in% sgp_grades, .(
+                    VALID_CASE=="VALID_CASE" & GRADE %in% sgp_grades, list(
                       MEAN_SGP=mean(SGP, na.rm=TRUE),
-                      MEDIAN_SGP=hdmedian(as.numeric(SGP), na.rm=TRUE),
+                      MEDIAN_SGP = round(hdmedian(as.numeric(SGP), na.rm=TRUE), 1),
                       MEAN_SGP_BASELINE=mean(SGP_BASELINE, na.rm=TRUE),
-                      MEDIAN_SGP_BASELINE=hdmedian(as.numeric(SGP_BASELINE), na.rm=TRUE),
+                      MEDIAN_SGP_BASELINE = round(hdmedian(as.numeric(SGP_BASELINE), na.rm=TRUE), 1), # Rounding per request from AZ 10/22/21
                       COUNT_SGP=sum(!is.na(SGP_BASELINE))),
                     keyby=c("YEAR", aggregation_group, "CONTENT_AREA")]
 
     group_aggregates <- grp_growth[grp_status]
+
+    ###   Expand `group_aggregates` to get all combinations of aggregate levels/rows
+    ##    https://stackoverflow.com/questions/43483497/data-table-equivalent-of-tidyrcomplete
+    tmp.grp.vars <- c("YEAR", aggregation_group, "CONTENT_AREA")
+    group_aggregates <- group_aggregates[do.call(CJ, c(mget(tmp.grp.vars), unique=TRUE)), on=tmp.grp.vars]
 
     ###   Create LAGGED growth and status variables
     shift.key <- c(aggregation_group, "CONTENT_AREA", "YEAR")
@@ -145,6 +155,7 @@
 
     ###   Create uncorrected Baseline difference (2021 - 2019)
     group_aggregates[, MSGP_BASELINE_DIFFERENCE_UNCORRECTED := MEDIAN_SGP_BASELINE - MEDIAN_SGP_PRIOR_2YEAR]
+    # group_aggregates[, MSGP_BASELINE_DIFFERENCE_UNCORRECTED := round(MSGP_BASELINE_DIFFERENCE_UNCORRECTED, 1)] # Do in initial summary table to keep manually calculated differences identical
 
     if (rtm_adjustment) {
     ###   RTM Adjusted MSGP_BASELINE_DIFFERENCE
@@ -171,6 +182,7 @@
     for (CA in content_areas) {
       group_aggregates[CONTENT_AREA == CA, MSGP_BASELINE_DIFFERENCE_ADJUSTED := MSGP_BASELINE_DIFFERENCE_UNCORRECTED - (PRIOR_MSGP_CENTERED_2YEAR*msgp_rtm_models[[CA]]$coef[["PRIOR_MSGP_CENTERED_2YEAR"]])]
     }
+    group_aggregates[, MSGP_BASELINE_DIFFERENCE_ADJUSTED := round(MSGP_BASELINE_DIFFERENCE_ADJUSTED, 1)] # Round to stay consistent with UNCORRECTED rounding
     } # END  rtm_adjustment
 
     ##    correlation checks
@@ -319,6 +331,7 @@
     ###   Create uncorrected mean scale score difference (2021 - 2019)
     group_aggregates[, MSSS_DIFFERENCE_UNCORRECTED := MEAN_SCALE_SCORE_STANDARDIZED - MEAN_SCALE_SCORE_PRIOR_2YEAR_STANDARDIZED]
     group_aggregates[, MSSP_DIFFERENCE_UNCORRECTED := MEAN_SCALE_SCORE_PERCENTILE - MEAN_SCALE_SCORE_PRIOR_2YEAR_PERCENTILE]
+    # group_aggregates[, MSSP_DIFFERENCE_UNCORRECTED := round(MSSP_DIFFERENCE_UNCORRECTED, 1)]
 
     if (rtm_adjustment) {
     ###   RTM Adjusted MSSS_DIFFERENCE
@@ -356,7 +369,9 @@
     for (CA in content_areas) {
       group_aggregates[CONTENT_AREA == CA, MSSP_DIFFERENCE_ADJUSTED := MSSP_DIFFERENCE_UNCORRECTED - (PRIOR_MSSP_CENTERED_2YEAR*mssp_rtm_models[[CA]]$coef[["PRIOR_MSSP_CENTERED_2YEAR"]])]
     }
+    group_aggregates[, MSSP_DIFFERENCE_ADJUSTED := round(MSSP_DIFFERENCE_ADJUSTED, 1)]
     }  #  END rtm_adjustment
+
     ##    correlation checks
     # cor(group_aggregates[, MSSS_DIFFERENCE_UNCORRECTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
     # cor(group_aggregates[YEAR == prior_year, MSSS_DIFFERENCE_UNCORRECTED, MEAN_SCALE_SCORE_PRIOR_STANDARDIZED], use='complete.obs')
@@ -509,11 +524,11 @@
 
     if (rtm_adjustment) {
     group_aggregates[, COVID_ACADEMIC_IMPACT_SSS_DIFF_ADJ := fcase(
-                        MSSS_DIFFERENCE_ADJUSTED >= 5, "Improvement",
-                        MSSS_DIFFERENCE_ADJUSTED < 5 & MSSS_DIFFERENCE_ADJUSTED >= -5, "Modest to None",
-                        MSSS_DIFFERENCE_ADJUSTED < -5 & MSSS_DIFFERENCE_ADJUSTED >= -15, "Moderate",
-                        MSSS_DIFFERENCE_ADJUSTED < -15 & MSSS_DIFFERENCE_ADJUSTED >= -25, "Large",
-                        MSSS_DIFFERENCE_ADJUSTED < -25, "Severe")]
+                        MSSS_DIFFERENCE_ADJUSTED > 0.05, "Improvement",
+                        MSSS_DIFFERENCE_ADJUSTED < 0.05 & MSSS_DIFFERENCE_ADJUSTED >= -0.1, "Modest to None",
+                        MSSS_DIFFERENCE_ADJUSTED < -0.1 & MSSS_DIFFERENCE_ADJUSTED >= -0.2, "Moderate",
+                        MSSS_DIFFERENCE_ADJUSTED < -0.2 & MSSS_DIFFERENCE_ADJUSTED >= -0.35, "Large",
+                        MSSS_DIFFERENCE_ADJUSTED < -0.35, "Severe")]
 
     group_aggregates[, COVID_ACADEMIC_IMPACT_SSS_DIFF_ADJ :=
                         factor(COVID_ACADEMIC_IMPACT_SSS_DIFF_ADJ, levels=c("Improvement", "Modest to None", "Moderate", "Large", "Severe"), ordered=TRUE)]

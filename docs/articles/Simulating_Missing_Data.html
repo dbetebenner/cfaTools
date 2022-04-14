@@ -45,7 +45,7 @@
   <a href="../articles/cfaTools.html">Getting Started</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
      
     <span class="caret"></span>
@@ -63,7 +63,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     News
      
     <span class="caret"></span>
@@ -106,7 +106,9 @@
 <!--/.navbar -->
 
       
-      </header><script src="Simulating_Missing_Data_files/header-attrs-2.9.1/header-attrs.js"></script><div class="row">
+      </header><script src="Simulating_Missing_Data_files/header-attrs-2.13/header-attrs.js"></script><link href="Simulating_Missing_Data_files/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet">
+<link href="Simulating_Missing_Data_files/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet">
+<script src="Simulating_Missing_Data_files/anchor-sections-1.1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
       <h1>Simulating Missing Data with amputeScaleScore</h1>
@@ -118,15 +120,17 @@
     
     
 <div class="contents">
-<div id="introduction" class="section level1">
+<div id="introduction" class="section level1 hasAnchor">
 <h1 class="hasAnchor">
-<a href="#introduction" class="anchor" aria-hidden="true"></a>Introduction</h1>
+<a href="#introduction" class="anchor" aria-hidden="true"></a>Introduction<a href="#introduction" class="anchor-section" aria-label="Anchor link to header"></a>
+</h1>
 <p>In preparation for the analysis of student assessment data in 2021, and given the assumption of reduced test participation in many states due to the ongoing COVID-19 pandemic, simulations of missing data that produce varying degrees and patterns of missingness were required. The <code>amputeScaleScore</code> function allows for customized simulation of data missing completely at random (MCAR), missing at random (MAR) and missing not at random (MNAR). These patterns can be specified to depend on a variety of student and institutional level variables.</p>
 <p>This vignette provides a brief introduction of how to use the <code>amputeScaleScore</code> function to simulate, explore and analyze missing data patterns using the <code>sgpData_LONG_COVID</code> data from the the <a href="https://github.com/CenterForAssessment/SGPdata">SGPData</a> package. This simulated data conforms to the data naming and structure that is <a href="https://centerforassessment.github.io/SGPdata/reference/index.html#section-data-sets-for-higher-level-sgp-functions">required for data</a> analysis using the <a href="https://github.com/CenterForAssessment/SGP">SGP package</a>.</p>
 </div>
-<div id="function-arguments" class="section level1">
+<div id="function-arguments" class="section level1 hasAnchor">
 <h1 class="hasAnchor">
-<a href="#function-arguments" class="anchor" aria-hidden="true"></a>Function Arguments</h1>
+<a href="#function-arguments" class="anchor" aria-hidden="true"></a>Function Arguments<a href="#function-arguments" class="anchor-section" aria-label="Anchor link to header"></a>
+</h1>
 <p>The following provides an explanation of the arguments a user can provide in the <code>amputeScaleScore</code> function.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">require</span>(cfaTools)</span></code></pre></div>
 <pre><code>## Loading required package: cfaTools</code></pre>
@@ -215,8 +219,7 @@
 <li>
 <code>reverse.weight = "SCALE_SCORE"</code>
 <ul>
-<li>The current default for <code>ampute.args$type</code> is <code>"RIGHT"</code>, which means that students with high weighted scores have the highest probability for amputation.<br>
-This makes sense for high % FRL schools, but not for high achieving students and/or students in high achieving schools. This function inverses the variable(s) individual (and institutional mean) value(s) so that higher weight is given to lower scores/means.</li>
+<li>The current default for <code>ampute.args$type</code> is <code>"RIGHT"</code>, which means that students with high weighted scores have the highest probability for amputation. This makes sense for high % FRL schools, but not for high achieving students and/or students in high achieving schools. This function inverses the variable(s) individual (and institutional mean) value(s) so that higher weight is given to lower scores/means.</li>
 <li>This argument is ignored when <code>ampute.vars = NULL</code>.</li>
 </ul>
 </li>
@@ -263,9 +266,10 @@ This makes sense for high % FRL schools, but not for high achieving students and
 </li>
 </ul>
 <p>Depending on the amputation process specified, the function returns either a list (default) of <code>M</code> amputed datasets or a single data set with <code>M</code> columns of missing record indicators. The datasets will exclude data for students not used in any of the specified <code>growth.config</code> or <code>status.config</code> cohorts, unless the <code>additional.data</code> argument has been included.</p>
-<div id="example-workflow-of-creating-missing-data" class="section level2">
+<div id="example-workflow-of-creating-missing-data" class="section level2 hasAnchor">
 <h2 class="hasAnchor">
-<a href="#example-workflow-of-creating-missing-data" class="anchor" aria-hidden="true"></a>Example workflow of creating missing data</h2>
+<a href="#example-workflow-of-creating-missing-data" class="anchor" aria-hidden="true"></a>Example workflow of creating missing data<a href="#example-workflow-of-creating-missing-data" class="anchor-section" aria-label="Anchor link to header"></a>
+</h2>
 <p>The sgpData_LONG_COVID object contains simulated data from 2016 to 2023. The data follows the same format as the example <a href="https://sgp.io/articles/SGP_Data_Preparation.html#long-data-format-sgpdata_long">long data</a> from the SGP package. The dataset is 7 years of annual assessment data in two content areas (ELA and Mathematics) and is missing 2020 data to help users model COVID related interruptions to student status and growth. The data comes with a “built in” impact in 2021 related to the pandemic (although an unperturbed version - <code>"SCALE_SCORE_without_COVID_IMPACT"</code> is also available so that different impact scenarios can be modeled).</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>  <span class="do">###   Load packages</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">require</span>(data.table)</span></code></pre></div>
@@ -308,9 +312,10 @@ This makes sense for high % FRL schools, but not for high achieving students and
 <span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">sgp.panel.years =</span> <span class="fu">c</span>(<span class="st">"2018"</span>, <span class="st">"2019"</span>, <span class="st">"2021"</span>),</span>
 <span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">sgp.grade.sequences =</span> <span class="fu">c</span>(<span class="st">"5"</span>, <span class="st">"6"</span>, <span class="st">"8"</span>))</span>
 <span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
-<div id="a-quick-example-run" class="section level3">
+<div id="a-quick-example-run" class="section level3 hasAnchor">
 <h3 class="hasAnchor">
-<a href="#a-quick-example-run" class="anchor" aria-hidden="true"></a>A quick example run</h3>
+<a href="#a-quick-example-run" class="anchor" aria-hidden="true"></a>A quick example run<a href="#a-quick-example-run" class="anchor-section" aria-label="Anchor link to header"></a>
+</h3>
 <p>To begin with we will run a quick test using the package defaults along with the augmented data and config scripts we just read in. The following script creates a single amputed dataset (which takes about as long as 10!).</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>Test_Data_LONG <span class="ot">&lt;-</span> <span class="fu">amputeScaleScore</span>(</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ampute.data =</span> data_to_ampute,</span>
@@ -331,17 +336,18 @@ This makes sense for high % FRL schools, but not for high achieving students and
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">list</span>(<span class="at">NAs =</span> <span class="fu">round</span>(<span class="fu">sum</span>(<span class="fu">is.na</span>(SCALE_SCORE))<span class="sc">/</span>.N, <span class="dv">3</span>)),</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                      keyby<span class="ot">=</span><span class="fu">list</span>(CONTENT_AREA, GRADE)]</span></code></pre></div>
 <pre><code>##    CONTENT_AREA GRADE   NAs
-## 1:          ELA     3 0.303
-## 2:          ELA     4 0.300
-## 3:          ELA     5 0.302
-## 4:          ELA     6 0.307
-## 5:          ELA     7 0.304
+## 1:          ELA     3 0.291
+## 2:          ELA     4 0.299
+## 3:          ELA     5 0.301
+## 4:          ELA     6 0.303
+## 5:          ELA     7 0.298
 ## 6:          ELA     8 0.306</code></pre>
 <p>Note that the observed missingness is near the intended (30%). The <code>mice::ampute.continuous</code> function does a decent job around 30% - 50% and worse the further away you get from there! Corrections for this have been implemented, but it’s still a bit off. Depending on the desired precision, users will need to experiment with <code>ampute.args$prop</code> argument values. The maximum proportion missing is currently around 85%. Hopefully that extreme enough…</p>
 </div>
-<div id="a-more-detailed-amputation" class="section level3">
+<div id="a-more-detailed-amputation" class="section level3 hasAnchor">
 <h3 class="hasAnchor">
-<a href="#a-more-detailed-amputation" class="anchor" aria-hidden="true"></a>A more detailed amputation</h3>
+<a href="#a-more-detailed-amputation" class="anchor" aria-hidden="true"></a>A more detailed amputation<a href="#a-more-detailed-amputation" class="anchor-section" aria-label="Anchor link to header"></a>
+</h3>
 <p>Note that the <code>amputeScaleScore</code> does not return 2019 scores not used as priors.</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">table</span>(Test_Data_LONG[[<span class="dv">1</span>]][, GRADE, YEAR])</span></code></pre></div>
 <pre><code>##       GRADE
@@ -462,9 +468,10 @@ This makes sense for high % FRL schools, but not for high achieving students and
 </div>
 </div>
 </div>
-<div id="missing-data-explorationvisualization" class="section level1">
+<div id="missing-data-explorationvisualization" class="section level1 hasAnchor">
 <h1 class="hasAnchor">
-<a href="#missing-data-explorationvisualization" class="anchor" aria-hidden="true"></a>Missing data exploration/visualization</h1>
+<a href="#missing-data-explorationvisualization" class="anchor" aria-hidden="true"></a>Missing data exploration/visualization<a href="#missing-data-explorationvisualization" class="anchor-section" aria-label="Anchor link to header"></a>
+</h1>
 <p>Now that we have some amputated data, we should evaluate it to make sure it looks like what we wanted. In our assumptions, we expect to see more missing data for students with lower 2019 scale scores, who are FRL, etc. The following visualization from the <code>VIM</code> package are helpful in exploring. See the VIM package for more context on these plots. In general, blue means observed data, red means missing. A good introduction is given <a href="https://www.datacamp.com/community/tutorials/visualize-data-vim-package">here</a>.</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">require</span>(VIM)</span></code></pre></div>
 <pre><code>## Loading required package: VIM</code></pre>
@@ -608,9 +615,10 @@ This makes sense for high % FRL schools, but not for high achieving students and
 <span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"SCALE_SCORE_COMPLETE.2021"</span>, <span class="st">"SCALE_SCORE.2021"</span>)]))</span></code></pre></div>
 <p><img src="Simulating_Missing_Data_files/figure-html/vim8-6.png" width="672"></p>
 </div>
-<div id="missing-data-analysis" class="section level1">
+<div id="missing-data-analysis" class="section level1 hasAnchor">
 <h1 class="hasAnchor">
-<a href="#missing-data-analysis" class="anchor" aria-hidden="true"></a>Missing data analysis</h1>
+<a href="#missing-data-analysis" class="anchor" aria-hidden="true"></a>Missing data analysis<a href="#missing-data-analysis" class="anchor-section" aria-label="Anchor link to header"></a>
+</h1>
 <p>In the following we run through a quick pooling of the results from the 10 amputed data sets to see how they differ from the “known truth”. This analysis focuses on school mean scale scores by grade, but similar analyses can be used with different aggregates and/or using different variables of interest (e.g., SGPs) as well.</p>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>school_means <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">mode =</span> <span class="st">"list"</span>, <span class="at">length =</span> <span class="fu">length</span>(Test_Data_LONG))</span>
 <span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (m <span class="cf">in</span> <span class="fu">seq</span>(MM)) {</span>
@@ -687,15 +695,15 @@ This makes sense for high % FRL schools, but not for high achieving students and
         <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#introduction">Introduction</a></li>
+<li><a href="#introduction">Introduction<span></span></a></li>
       <li>
-<a href="#function-arguments">Function Arguments</a>
+<a href="#function-arguments">Function Arguments<span></span></a>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#example-workflow-of-creating-missing-data">Example workflow of creating missing data</a></li>
+<li><a href="#example-workflow-of-creating-missing-data">Example workflow of creating missing data<span></span></a></li>
       </ul>
 </li>
-      <li><a href="#missing-data-explorationvisualization">Missing data exploration/visualization</a></li>
-      <li><a href="#missing-data-analysis">Missing data analysis</a></li>
+      <li><a href="#missing-data-explorationvisualization">Missing data exploration/visualization<span></span></a></li>
+      <li><a href="#missing-data-analysis">Missing data analysis<span></span></a></li>
       </ul>
 </div>
       </div>

@@ -6,8 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="https://centerforassessment.github.io/assets/favicon.png" sizes="16x16">
-<meta property="og:title" content="cfaTools • Exploring Ho’s (2021) Fair Trend Metric">
-<meta property="og:description" content="cfaTools • Exploring Ho’s (2021) Fair Trend Metric">
+<meta property="og:title" content="cfaTools • Exploring Ho’s Fair Trend Metric">
+<meta property="og:description" content="cfaTools • Exploring Ho’s Fair Trend Metric">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://centerforassessment.github.io/cfaTools">
 <meta property="og:image" content="https://centerforassessment.github.io/assets/favicon.png">
@@ -15,9 +15,9 @@
 <meta name="twitter:site" content="@NCIEA1">
 <meta name="twitter:creator" content="@dbetebenner">
 <meta name="twitter:image" content="https://centerforassessment.github.io/assets/favicon.png">
-<meta name="twitter:title" content="cfaTools • Exploring Ho’s (2021) Fair Trend Metric">
-<meta name="twitter:description" content="cfaTools • Exploring Ho’s (2021) Fair Trend Metric">
-<title>cfaTools • Exploring Ho’s (2021) Fair Trend Metric</title>
+<meta name="twitter:title" content="cfaTools • Exploring Ho’s Fair Trend Metric">
+<meta name="twitter:description" content="cfaTools • Exploring Ho’s Fair Trend Metric">
+<title>cfaTools • Exploring Ho’s Fair Trend Metric</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- Fonts --><link href="https://fonts.googleapis.com/css?family=Josefin+Sans:400" rel="stylesheet" type="text/css">
 <!-- packagePages --><link href="../packagePages.css" rel="stylesheet">
@@ -45,7 +45,7 @@
   <a href="../articles/cfaTools.html">Getting Started</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
      
     <span class="caret"></span>
@@ -63,7 +63,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     News
      
     <span class="caret"></span>
@@ -106,10 +106,12 @@
 <!--/.navbar -->
 
       
-      </header><script src="fair_trend_files/header-attrs-2.9.1/header-attrs.js"></script><div class="row">
+      </header><script src="fair_trend_files/header-attrs-2.13/header-attrs.js"></script><link href="fair_trend_files/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet">
+<link href="fair_trend_files/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet">
+<script src="fair_trend_files/anchor-sections-1.1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
-      <h1>Exploring Ho’s (2021) Fair Trend Metric</h1>
+      <h1>Exploring Ho’s Fair Trend Metric</h1>
                         <h4 class="author">Nathan Dadey</h4>
             
             <h4 class="date">May 3, 2021</h4>
@@ -118,28 +120,32 @@
     
     
 <div class="contents">
-<div id="introduction" class="section level1">
+<div id="introduction" class="section level1 hasAnchor">
 <h1 class="hasAnchor">
-<a href="#introduction" class="anchor" aria-hidden="true"></a>Introduction</h1>
+<a href="#introduction" class="anchor" aria-hidden="true"></a>Introduction<a href="#introduction" class="anchor-section" aria-label="Anchor link to header"></a>
+</h1>
 <p>Typically, statewide summative assessment scores are reported according to rules developed to protect student privacy and support a given state’s accountability system. With the flexibility offered by the U.S. Department of education through addendums and waivers, the constraints imposed by state accountability systems are largely moot. However, the requirements to report scores at both the individual and summary levels are not. State departments now have the blessing and curse of considering new approaches to reporting, approaches that that still protect student privacy but better account for unique context of the Spring 2021 administration.</p>
 <p>One possible new approach is to introduce novel metrics that answer two key questions: (A) <em>Who tested?</em>, and (B) <em>Are the comparisons being drawn “apples-to-apples”?</em> One leading proposal for novel metrics – perhaps the only proposal right now – is by <a href="https://www.dropbox.com/s/fevy2x2a1ql9ld3/Three%20Test%20Score%20Metrics%20States%20Should%20Report%20in%202021%20-%20Andrew%20Ho%20-%20Draft%20Memo.docx?dl=0">Ho (2021)</a>, who outlines three metrics: (1) Longitudinally Linked Match Rate, (2) Fair Trend and (3) Equity Check. Here I investigate the second metric, Fair Trend, because the first metric, match rate, is fairly straight forward to implement and because the third metric, Equity Check, uses the same underlying approach as the Fair Trend Metric. The purpose of this exploration is to clearly explain the Fair Trend statistic and support that explanation through R code. This code is a simplification of forthcoming implementation in the <a href="https://github.com/CenterForAssessment/cfaTools">CFATools package</a>.</p>
 </div>
-<div id="implementing-fair-trend" class="section level1">
+<div id="implementing-fair-trend" class="section level1 hasAnchor">
 <h1 class="hasAnchor">
-<a href="#implementing-fair-trend" class="anchor" aria-hidden="true"></a>Implementing Fair Trend</h1>
+<a href="#implementing-fair-trend" class="anchor" aria-hidden="true"></a>Implementing Fair Trend<a href="#implementing-fair-trend" class="anchor-section" aria-label="Anchor link to header"></a>
+</h1>
 <p>The Fair Trend metric is meant to address the question: “how did students in a given grade do this year, compared to students in that same grade in 2019?”, for grades 5 to 8. For example, how did fifth grade students do this year, compared to fifth graders in 2019? Instead of simply comparing scores from 2021 to 2019, however, the Fair Trend metric provides a substitute for 2019 scores. This substitution is meant to address the impact of non-participation, which looks to be a substantial problem for the administration of Spring 2021 assessments.</p>
 <p>To compute Fair Trend, there are three steps, which I detail below. I also introduce a “Step 0,” in which I read in a simulated data set, sgpData_LONG_COVID, from the the <a href="https://CRAN.R-project.org/package=SGPdata">SGPData</a> package. This simulated data set, which follows the format of the data used by the SGP package, has been built by <a href="https://www.nciea.org/about-us/team/consultant/damian-betebenner">Damian Betebenner</a> to help support explorations of the use of Spring 2021 assessment results, <em>before</em> the Spring 2021 results are available.</p>
-<div id="step-0" class="section level3">
+<div id="step-0" class="section level3 hasAnchor">
 <h3 class="hasAnchor">
-<a href="#step-0" class="anchor" aria-hidden="true"></a>Step 0</h3>
+<a href="#step-0" class="anchor" aria-hidden="true"></a>Step 0<a href="#step-0" class="anchor-section" aria-label="Anchor link to header"></a>
+</h3>
 <p>The sgpData_LONG_COVID object contains simulated data from 2016 to 2023. The data follows the same format as the example <a href="https://sgp.io/articles/SGP_Data_Preparation.html#long-data-format-sgpdata_long">long data</a> from the SGP package. The dataset is 7 years of annual, vertically scaled, assessment data in two content areas (ELA and Mathematics) and is missing 2020 data to help users model COVID related interuptions to student growth. The data from 2021 onward is meant to serve as a baseline that can be modified to match number of possible scenarios (e.g., depress scores to approximate negative impact on learning, remove data to approximate non-participation). Restated, the data does not come with “built in” impacts related to the pandemic.</p>
 <p>Here I select data from 2017 to 2021 and put that into a new object called covid.data. I also limit the exploration to just the cohort of students who took the fifth grade mathematics assessment in 2021, whereas any actual implementation will need to be applied to both English Language Arts and Mathematics in grades 5 to 8.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(SGPdata)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  covid.data <span class="ot">&lt;-</span> sgpData_LONG_COVID[YEAR <span class="sc">&lt;=</span> <span class="dv">2021</span> <span class="sc">&amp;</span> YEAR <span class="sc">&gt;=</span> <span class="dv">2017</span> <span class="sc">&amp;</span> CONTENT_AREA <span class="sc">==</span> <span class="st">"MATHEMATICS"</span>,]</span></code></pre></div>
 </div>
-<div id="step-1" class="section level3">
+<div id="step-1" class="section level3 hasAnchor">
 <h3 class="hasAnchor">
-<a href="#step-1" class="anchor" aria-hidden="true"></a>Step 1</h3>
+<a href="#step-1" class="anchor" aria-hidden="true"></a>Step 1<a href="#step-1" class="anchor-section" aria-label="Anchor link to header"></a>
+</h3>
 <p>In the first step, “skip-year” regressions are created that predict 2019 scores based on 2017 scores<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. Ho notes that this model can be fit “flexibly, nonlinearly, and perhaps nonparametrically” (p. 5). Thus the functional form of the regressions is open to exploration, but Ho provides a simple OLS regression as a starting point. Here I use this starting point for the purposes of illustration. In addition, although Ho notes that the functional form of the prediction is open to exploration, he also notes that the model, at least based on Ho’s specifications, is not meant to include covariates beyond test scores:</p>
 <p><span class="math display">\[\begin{align}
 x_{g,2019} = \alpha  + \beta x_{g-2,2017} + \varepsilon,
@@ -165,9 +171,10 @@ x_{g,2019} = \alpha  + \beta x_{g-2,2017} + \varepsilon,
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Run Regression</span></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(SCALE_SCORE<span class="fl">.2019</span> <span class="sc">~</span> SCALE_SCORE<span class="fl">.2017</span>, <span class="at">data =</span> historical.cohort)</span></code></pre></div>
 </div>
-<div id="step-2" class="section level3">
+<div id="step-2" class="section level3 hasAnchor">
 <h3 class="hasAnchor">
-<a href="#step-2" class="anchor" aria-hidden="true"></a>Step 2</h3>
+<a href="#step-2" class="anchor" aria-hidden="true"></a>Step 2<a href="#step-2" class="anchor-section" aria-label="Anchor link to header"></a>
+</h3>
 <p>In the second step, the estimated coefficients from the regressions in Step 1 are used to calculate scores using longitudinal data from the “current” cohorts of students - the cohorts of students testing in 2021. Continuing the grade 5 example, the current cohort is made up of students who have “comparable” fifth grade test scores in 2021 and third grade test scores in 2019. Selecting this cohort may exclude a number of third grade students 2019 with comparable third grade scores, but do not have a comparable fifth grade test scores in 2021.</p>
 <p>Let the scores for the current cohort be indicated by an asterisk, e.g., <span class="math inline">\(x^*_{3,2019}\)</span>, is the vector of scores for third grade students in 2019 who also have a “comparable” fifth grade assessment score in 2021. These values are then plugged into the following formula:</p>
 <p><span class="math display">\[h_{g}=\hat{\alpha}  + \hat{\beta} x^*_{g-2,2019},\]</span> where <span class="math inline">\(\hat{\alpha}\)</span> and <span class="math inline">\(\hat{\beta}\)</span> are the estimated coefficients from Step 1. The resulting values, <span class="math inline">\(h_{g}\)</span> are meant to be compared to scores in 2021. Thus these predicted values are “standing in” for the observed 2019 scores. Ho refers to <span class="math inline">\(h_{g}\)</span> as “academic peer scores,” and argues that comparing 2021 scores to these predicted scores “enables appropriate comparisons of performance this year to the performance of academic peers two years prior” (2021, p. 4). In our example case, <em>g</em> = 5, the resulting values, <span class="math inline">\(h_{5}\)</span> are meant to be compared to fifth grade scores in 2021, <span class="math inline">\(x^*_{5,2021}\)</span>.</p>
@@ -195,9 +202,10 @@ x_{g,2019} = \alpha  + \beta x_{g-2,2017} + \varepsilon,
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    slope     <span class="ot">&lt;-</span> fit<span class="sc">$</span>coefficients[<span class="dv">2</span>]</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    current.cohort<span class="sc">$</span>SCALE_SCORE.Ho2_FairTrend <span class="ot">&lt;-</span> intercept <span class="sc">+</span> slope<span class="sc">*</span>current.cohort<span class="sc">$</span>SCALE_SCORE<span class="fl">.2019</span>_AP</span></code></pre></div>
 </div>
-<div id="step-3" class="section level3">
+<div id="step-3" class="section level3 hasAnchor">
 <h3 class="hasAnchor">
-<a href="#step-3" class="anchor" aria-hidden="true"></a>Step 3</h3>
+<a href="#step-3" class="anchor" aria-hidden="true"></a>Step 3<a href="#step-3" class="anchor-section" aria-label="Anchor link to header"></a>
+</h3>
 <p>The third step is to compare the these “fair trend” scores, <span class="math inline">\(h_{g}\)</span> to the scores from the same grade in 2021, <span class="math inline">\(x^*_{g,2021}\)</span>. Presumably, similar judgments about school, district and state improvement can be made based on these comparisons as is done between single years under normal circumstances.</p>
 <center>
 <div class="figure">
@@ -205,9 +213,10 @@ x_{g,2019} = \alpha  + \beta x_{g-2,2017} + \varepsilon,
 </div>
 </center>
 </div>
-<div id="considerations" class="section level2">
+<div id="considerations" class="section level2 hasAnchor">
 <h2 class="hasAnchor">
-<a href="#considerations" class="anchor" aria-hidden="true"></a>Considerations</h2>
+<a href="#considerations" class="anchor" aria-hidden="true"></a>Considerations<a href="#considerations" class="anchor-section" aria-label="Anchor link to header"></a>
+</h2>
 
 <p>Ideally, any new statistic used to explore and explain student performance should be thoroughly vetted via application to historical and simulated data. Here we can do so by comparing the “fair trend” scores, <span class="math inline">\(h_{5}\)</span>, to the actual fifth grade scores from 2019, <span class="math inline">\(x_{g,2021}\)</span>, as well as just the fifth grade scores from the matched cohort, <span class="math inline">\(x^*_{g,2021}\)</span>. One issue critical issue to examine is that approaches like Ho’s Fair Trend metric reduce year to year relationships to a single equation. In the case of the simple OLS example, a single slope and intercept. Likely, the single slope does not adequately capture relationships across all units of interest (e.g., schools or districts, specific subgroups, or learning conditions), between 2017 and 2019 scores, as well as between 2019 and 2021 scores.</p>
 </div>
@@ -226,11 +235,11 @@ x_{g,2019} = \alpha  + \beta x_{g-2,2017} + \varepsilon,
         <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#introduction">Introduction</a></li>
+<li><a href="#introduction">Introduction<span></span></a></li>
       <li>
-<a href="#implementing-fair-trend">Implementing Fair Trend</a>
+<a href="#implementing-fair-trend">Implementing Fair Trend<span></span></a>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#considerations">Considerations</a></li>
+<li><a href="#considerations">Considerations<span></span></a></li>
       </ul>
 </li>
       </ul>

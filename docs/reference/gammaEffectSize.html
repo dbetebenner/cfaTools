@@ -75,7 +75,7 @@
   <a href="../articles/cfaTools.html">Getting Started</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
      
     <span class="caret"></span>
@@ -93,7 +93,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     News
      
     <span class="caret"></span>
@@ -180,8 +180,14 @@
                 <span class='co'>###  require(SGPdata)</span>
                 <span class='co'>###  require(data.table)</span>
                 <span class='fu'>gammaEffectSize</span>(
-                        <span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'>na.omit</span>(<span class='no'>sgpData_LONG_COVID</span>[<span class='no'>YEAR</span><span class='kw'>==</span><span class='st'>"2019"</span> <span class='kw'>&amp;</span> <span class='no'>CONTENT_AREA</span><span class='kw'>==</span><span class='st'>"ELA"</span> <span class='kw'>&amp;</span> <span class='no'>GRADE</span><span class='kw'>==</span><span class='st'>"3"</span>, <span class='no'>SCALE_SCORE</span>]),
-                        <span class='kw'>y</span> <span class='kw'>=</span> <span class='fu'>na.omit</span>(<span class='no'>sgpData_LONG_COVID</span>[<span class='no'>YEAR</span><span class='kw'>==</span><span class='st'>"2021"</span> <span class='kw'>&amp;</span> <span class='no'>CONTENT_AREA</span><span class='kw'>==</span><span class='st'>"ELA"</span> <span class='kw'>&amp;</span> <span class='no'>GRADE</span><span class='kw'>==</span><span class='st'>"3"</span>, <span class='no'>SCALE_SCORE</span>]),
+                        <span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'>na.omit</span>(<span class='no'>sgpData_LONG_COVID</span>[
+                                        <span class='no'>YEAR</span><span class='kw'>==</span><span class='st'>"2019"</span> <span class='kw'>&amp;</span>
+                                        <span class='no'>CONTENT_AREA</span><span class='kw'>==</span><span class='st'>"ELA"</span> <span class='kw'>&amp;</span>
+                                        <span class='no'>GRADE</span><span class='kw'>==</span><span class='st'>"3"</span>, <span class='no'>SCALE_SCORE</span>]),
+                        <span class='kw'>y</span> <span class='kw'>=</span> <span class='fu'>na.omit</span>(<span class='no'>sgpData_LONG_COVID</span>[
+                                        <span class='no'>YEAR</span><span class='kw'>==</span><span class='st'>"2021"</span> <span class='kw'>&amp;</span>
+                                        <span class='no'>CONTENT_AREA</span><span class='kw'>==</span><span class='st'>"ELA"</span> <span class='kw'>&amp;</span>
+                                        <span class='no'>GRADE</span><span class='kw'>==</span><span class='st'>"3"</span>, <span class='no'>SCALE_SCORE</span>]),
                                 <span class='kw'>prob</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>9</span>/<span class='fl'>10</span>)
 
 })</div></pre>

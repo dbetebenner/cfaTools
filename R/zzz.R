@@ -2,9 +2,20 @@
 function(libname, pkgname) {
 }
 
-`.onAttach` <-
-function(libname, pkgname) {
-	if (interactive()) {
-		packageStartupMessage(magenta$bold('cfaTools',paste(paste0(unlist(strsplit(as.character(packageVersion("cfaTools")), "[.]")), c(".", "-", ".", "")), collapse=""),' (11-21-2021). For help: >help("cfaTools") or visit https://centerforassessment.github.io/cfaTools'))
-	}
+.onAttach <- function(libname, pkgname) {
+    if (interactive()) {
+        # Extract version information
+        version <- utils::packageVersion("cfaTools")
+
+        # Define a friendly startup message
+	message_text <- paste0(
+	    magenta(bold("\uD83C\uDF89 cfaTools v", version)), " - ", toOrdinal::toOrdinalDate("2024-12-3"), "\n",
+	    "\U1F4A1 Tip: ", magenta(bold("> help(\"cfaTools\")")), "\n",
+	    "\U1F310 Docs: ", magenta(bold("https://centerforassessment.github.io/cfaTools")), "\n",
+	    "\u2728 Happy cfaTooling!"
+	)
+
+        # Display the startup message
+        packageStartupMessage(message_text)
+    }
 }

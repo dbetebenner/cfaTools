@@ -10,7 +10,7 @@ Authors@R: c(person(given=c("Damian", "W."), family="Betebenner", email="dbetebe
 Maintainer: Damian W. Betebenner <dbetebenner@nciea.org>
 Depends: R (>= 4.0)
 Suggests: SGPdata (>= 24.0-0), knitr, rmarkdown
-Imports: abind, crayon, data.table (>= 1.14.0), dplyr, grid, HDInterval, Hmisc, MASS, mice, miceadds, parallel, SGP, testthat, tidyr, tidyselect, toOrdinal, VIM
+Imports: abind, crayon, data.table (>= 1.14.0), dplyr, grid, HDInterval, Hmisc, MASS, mice, miceadds, parallel, pkgsearch, SGP, testthat, tidyr, tidyselect, toOrdinal, VIM
 URL: https://CenterForAssessment.github.io/cfaTools/, https://github.com/CenterForAssessment/cfaTools, https://cran.r-project.org/package=cfaTools
 BugReports: https://github.com/CenterForAssessment/cfaTools/issues
 VignetteBuilder: knitr
